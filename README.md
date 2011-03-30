@@ -11,6 +11,7 @@ for the browser, download the lastest [bz.js](http://github.com/harthur/bz/downl
 
 # usage	
 	var bugzilla = new bz.BugzillaClient({
+	  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
 	  username: 'bugs@bugmail.com',
 	  password: 'secret'
 	});
