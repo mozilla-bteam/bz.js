@@ -3,15 +3,13 @@ A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzil
 
 # install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
-	git clone http://github.com/harthur/bz.js.git
-	cd bz.js
-	npm install .
+	npm install bz
 	
 and use with `var bz = require("bz")`
 
 For the browser, download the lastest [bz.js](http://github.com/harthur/bz/downloads).
 
-For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone the repo into your packages folder, add "bz" as a dependency to your package.json, and use with `var bz = require('bz')`
+For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone the repo into your packages folder with the name bz, add "bz" as a dependency to your package.json, and use with `var bz = require('bz')`
 
 # usage
 	var bugzilla = new bz.BugzillaClient();
