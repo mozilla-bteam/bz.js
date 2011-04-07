@@ -3,7 +3,7 @@ A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzil
 
 # install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
-	npm install bz
+	npm install bz --dev
 	
 and use with `var bz = require("bz")`
 
@@ -21,7 +21,7 @@ For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone 
 
 # API
 `bz.createClient(options)`  
-creates a new Bugzilla API client, optionally takes optional arguments like the REST API url and username + password: 
+creates a new Bugzilla API client, optionally takes options like the REST API url and username + password: 
 	var bugzilla = bz.createClient({
 	  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
 	  username: 'bugs@bugmail.com',
