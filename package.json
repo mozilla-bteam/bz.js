@@ -1,19 +1,20 @@
 {
-    "name": "bz", 
+    "name": "bz",
+    "description": "Bugzilla REST API wrapper",
+    "version": "0.2.0",
+    "author": "Heather Arthur <fayearthur@gmail.com>",
+    "keywords": ["bugzilla"],
     "repository": {
-        "url": "http://github.com/harthur/bz.git", 
+        "url": "http://github.com/harthur/bz.js.git",
         "type": "git"
-    }, 
-    "author": "Heather Arthur <fayearthur@gmail.com>", 
+    },
+    "main": "./lib/bz",
     "directories": {
         "lib": "./lib"
     },
-    "version": "0.1.0", 
     "devDependencies": {
         "request": "*",
         "connect": "*"
-    }, 
-    "main": "./lib/bz",
-    "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0",
-    "description": "Bugzilla REST API wrapper"
+    },
+    "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0"
 }

@@ -12,7 +12,7 @@ For the browser, download the lastest [bz.js](http://github.com/harthur/bz/downl
 For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone the repo into your packages folder with the name bz, add "bz" as a dependency to your package.json, and use with `var bz = require('bz')`
 
 # usage
-	var bugzilla = new bz.BugzillaClient();
+	var bugzilla = bz.createClient();
 
 	bugzilla.getBug(678223, function(error, bug) {
 	  if(!error)
@@ -20,9 +20,9 @@ For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone 
 	});
 
 # API
-`bz.BugzillaClient(options)`  
-gets a new Bugzilla API client, optionally takes optional arguments like the REST API url and username + password: 
-	var bugzilla = new bz.BugzillaClient({
+`bz.createClient(options)`  
+creates a new Bugzilla API client, optionally takes optional arguments like the REST API url and username + password: 
+	var bugzilla = bz.createClient({
 	  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
 	  username: 'bugs@bugmail.com',
 	  password: 'secret'
