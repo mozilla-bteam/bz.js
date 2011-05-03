@@ -21,7 +21,8 @@ For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone 
 
 # API
 `bz.createClient(options)`  
-creates a new Bugzilla API client, optionally takes options like the REST API url and username + password: 
+creates a new Bugzilla API client, optionally takes options like the REST API url and username + password:
+
 	var bugzilla = bz.createClient({
 	  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
 	  username: 'bugs@bugmail.com',
