@@ -14,7 +14,8 @@
     },
     "devDependencies": {
         "request": "*",
-        "connect": "*"
+        "connect": "*",
+        "browserify": ">=1.0.0"
     },
     "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0"
 }
