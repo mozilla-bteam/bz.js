@@ -40,8 +40,10 @@ bugzilla.createBug({
 
 bugzilla.getBug(9955, function(error, bug) {
   assert.ok(!error, error);
-  bug.summary = "new summary";
-
+  bug = {
+     update_token: bug.update_token,
+     summary: 'new summary'
+  }
   bugzilla.updateBug(9955, bug, function(error, ok) {
     assert.ok(!error, error);
     assert.ok(ok);

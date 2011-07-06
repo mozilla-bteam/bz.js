@@ -17,7 +17,10 @@ function testBz() {
   });
 
   bugzilla.getBug(9955, function(error, bug) {
-    bug.summary = "new summary";
+    bug = {
+       update_token: bug.update_token,
+       summary: 'new summary'
+    }
     bugzilla.updateBug(9955, bug, function(error, ok) {
       if(error)
         $("#update-bug .fail").addClass("true");
