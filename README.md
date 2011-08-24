@@ -7,7 +7,7 @@ For [node](http://nodejs.org) install with [npm](http://npmjs.org):
 	
 and use with `var bz = require("bz")`
 
-For the browser, download the lastest [bz.js](http://github.com/harthur/bz/downloads).
+For the browser, download the lastest [bz.js](http://github.com/harthur/bz.js/downloads).
 
 For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone the repo into your packages folder with the name bz, add "bz" as a dependency to your package.json, and use with `var bz = require('bz')`
 
