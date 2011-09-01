@@ -22,3 +22,8 @@ bugzilla.getConfiguration({}, function(error, config) {
   assert.ok(!error, error);
   assert.ok(config.version);
 });
+
+bugzilla.getConfiguration(function(error, config) {
+  assert.ok(!error, error);
+  assert.ok(config.version);
+});

@@ -1,7 +1,7 @@
 {
     "name": "bz",
     "description": "Bugzilla REST API wrapper",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "author": "Heather Arthur <fayearthur@gmail.com>",
     "keywords": ["bugzilla"],
     "repository": {

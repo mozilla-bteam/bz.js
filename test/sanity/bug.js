@@ -14,6 +14,11 @@ bugzilla.getBug(6000, function(error, bug) {
   assert.ok(bug.summary);
 });
 
+bugzilla.getBug(6000, {include_fields: "history"}, function(error, bug) {
+  assert.ok(!error, error);
+  assert.ok(bug.history);
+});
+
 bugzilla.searchBugs({
     summary: "window",
     summary_type: "contains_all_words"
