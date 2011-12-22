@@ -1,33 +1,41 @@
-#bz.js
+# bz.js
+
 A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
 
 # install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
-	npm install bz --dev
-	
+
+```	
+npm install bz --dev
+```
+
 and use with `var bz = require("bz")`
 
-For the browser, download the lastest [bz.js](http://github.com/harthur/bz.js/downloads).
-
-For use with Mozilla's [Addon SDK](https://github.com/mozilla/addon-sdk): clone the repo into your packages folder with the name bz, add "bz" as a dependency to your package.json, and use with `var bz = require('bz')`
+For the browser, download the lastest [bz.js](http://github.com/harthur/bz.js/downloads). Or build a browser file from the source code with [browserbuild](https://github.com/LearnBoost/browserbuild): `browserbuild lib/bz.js`.
 
 # usage
-	var bugzilla = bz.createClient();
 
-	bugzilla.getBug(678223, function(error, bug) {
-	  if(!error)
-	    alert(bug.summary);
-	});
+```javascript
+var bugzilla = bz.createClient();
+
+bugzilla.getBug(678223, function(error, bug) {
+  if (!error) {
+    alert(bug.summary);
+  }
+});
+```
 
 # API
-`bz.createClient(options)`  
+`bz.createClient(options)`
 creates a new Bugzilla API client, optionally takes options like the REST API url and username + password:
 
-	var bugzilla = bz.createClient({
-	  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
-	  username: 'bugs@bugmail.com',
-	  password: 'secret'
-	});
+```javascript
+var bugzilla = bz.createClient({
+  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
+  username: 'bugs@bugmail.com',
+  password: 'secret'
+});
+```
 
 ### Client methods
 Each method takes a callback that takes an error message (if any kind of error occurs) as its first argument, and the expected return data as its second.
