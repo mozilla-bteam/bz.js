@@ -6,7 +6,7 @@ A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzil
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
 
 ```	
-npm install bz --dev
+npm install bz
 ```
 
 and use with `var bz = require("bz")`

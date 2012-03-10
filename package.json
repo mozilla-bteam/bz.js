@@ -1,7 +1,7 @@
 {
     "name": "bz",
     "description": "Bugzilla REST API wrapper",
-    "version": "0.2.3",
+    "version": "0.2.5",
     "author": "Heather Arthur <fayearthur@gmail.com>",
     "keywords": ["bugzilla"],
     "repository": {
@@ -9,11 +9,10 @@
         "type": "git"
     },
     "main": "./lib/bz",
-    "directories": {
-        "lib": "./lib"
+    "dependencies": {
+        "request": "1.9.x"
     },
     "devDependencies": {
-        "request": "*",
         "connect": "*",
         "browserify": ">=1.0.0"
     },
