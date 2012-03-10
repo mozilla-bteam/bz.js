@@ -11,7 +11,7 @@ npm install bz
 
 and use with `var bz = require("bz")`
 
-For the browser, download the lastest [bz.js](http://github.com/harthur/bz.js/downloads). Or build a browser file from the source code with [browserbuild](https://github.com/LearnBoost/browserbuild): `browserbuild lib/bz.js`.
+For the browser, download the lastest [bz.js](http://github.com/harthur/bz.js/downloads). Or build a browser file from the source code with [browserbuild](https://github.com/LearnBoost/browserbuild): `browserbuild bz.js`.
 
 # usage
 

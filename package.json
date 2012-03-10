@@ -8,7 +8,7 @@
         "url": "http://github.com/harthur/bz.js.git",
         "type": "git"
     },
-    "main": "./lib/bz",
+    "main": "./bz",
     "dependencies": {
         "request": "1.9.x"
     },

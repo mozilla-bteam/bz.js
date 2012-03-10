@@ -1,4 +1,4 @@
-var bz = require("../../lib/bz"),
+var bz = require("../../bz"),
     sys = require("sys"),
     assert = require("assert");
 
