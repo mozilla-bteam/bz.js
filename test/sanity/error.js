@@ -1,5 +1,5 @@
 var bz = require("../../bz"),
-    sys = require("sys"),
+    util = require('util'),
     assert = require("assert");
 
 var bugzilla = bz.createClient({
