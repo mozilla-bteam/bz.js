@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/harthur/bz.js.png)](http://travis-ci.org/harthur/bz.js)
 # bz.js
 
 A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
