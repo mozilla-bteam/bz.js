@@ -2,6 +2,7 @@ var BugzillaClient = function(options) {
   options = options || {};
   this.username = options.username;
   this.password = options.password;
+  this.timeout = options.timeout || 0;
   this.apiUrl = options.url || 
     (options.test ? "https://api-dev.bugzilla.mozilla.org/test/latest/"
                   : "https://api-dev.bugzilla.mozilla.org/latest/");
@@ -107,25 +108,35 @@ BugzillaClient.prototype = {
         req.setRequestHeader("Content-type", "application/json");
       }
       req.onreadystatechange = function (event) {
-        if (req.readyState == 4) {
+        if (req.readyState == 4 && req.status != 0) {
           that.handleResponse(null, req, callback, field);
         } 
+      };
+      req.timeout = this.timeout;
+      req.ontimeout = function (event) {
+        that.handleResponse('timeout', req, callback);
+      };
+      req.onerror = function (event) {
+        that.handleResponse('error', req, callback);
       };
       req.send(body);
     }
     else {
       // node 'request' package
-      require("request")({
-          uri: url,
-          method: method,
-          body: body,
-          headers: {'Content-type': 'application/json'}
-        },
-        function (err, resp, body) {
-          that.handleResponse(err, {
-              status: resp && resp.statusCode,
-              responseText: body
-            }, callback, field);
+      var request = require("request");
+      var requestParams = {
+        uri: url,
+        method: method,
+        body: body,
+        headers: {'Content-type': 'application/json'}
+      };
+      if (this.timeout > 0)
+        requestParams.timeout = this.timeout;
+      request(requestParams, function (err, resp, body) {
+        that.handleResponse(err, {
+            status: resp && resp.statusCode,
+            responseText: body
+          }, callback, field);
         }
       );
     }
@@ -133,6 +144,10 @@ BugzillaClient.prototype = {
   
   handleResponse : function(err, response, callback, field) {
     var error, json;
+    if (err && err.code && (err.code == 'ETIMEDOUT' || err.code == 'ESOCKETTIMEDOUT'))
+      err = 'timeout';
+    else if (err)
+      err = err.toString();
     if(err)
       error = err;
     else if(response.status >= 300 || response.status < 200)
