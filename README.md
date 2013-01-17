@@ -27,13 +27,14 @@ bugzilla.getBug(678223, function(error, bug) {
 
 # API
 `bz.createClient(options)`
-creates a new Bugzilla API client, optionally takes options like the REST API url and username + password:
+creates a new Bugzilla API client, optionally takes options like the REST API url, username + password, and timeout in milliseconds:
 
 ```javascript
 var bugzilla = bz.createClient({
   url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
   username: 'bugs@bugmail.com',
-  password: 'secret'
+  password: 'secret',
+  timeout: 30000
 });
 ```
 
