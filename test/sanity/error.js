@@ -3,7 +3,7 @@ var bz = require("../../bz"),
     assert = require("assert");
 
 var bugzilla = bz.createClient({
-  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
+  url: "https://api-dev.bugzilla.mozilla.org/test/latest/",
   username: "testbzapi@gmail.com",
   password: "password"
 });
