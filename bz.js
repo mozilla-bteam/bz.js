@@ -4,8 +4,11 @@ var BugzillaClient = function(options) {
   this.password = options.password;
   this.timeout = options.timeout || 0;
   this.apiUrl = options.url || 
-    (options.test ? "https://api-dev.bugzilla.mozilla.org/test/latest/"
-                  : "https://api-dev.bugzilla.mozilla.org/latest/");
+    (options.test ? "https://api-dev.bugzilla.mozilla.org/test/latest"
+                  : "https://api-dev.bugzilla.mozilla.org/latest");
+  var i = this.apiUrl.length - 1, lastChar = this.apiUrl.charAt(i);
+  if (lastChar == '/')
+    this.apiUrl = this.apiUrl(0, i);
 }
 
 BugzillaClient.prototype = {
