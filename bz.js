@@ -3,12 +3,10 @@ var BugzillaClient = function(options) {
   this.username = options.username;
   this.password = options.password;
   this.timeout = options.timeout || 0;
-  this.apiUrl = options.url || 
+  this.apiUrl = options.url ||
     (options.test ? "https://api-dev.bugzilla.mozilla.org/test/latest"
                   : "https://api-dev.bugzilla.mozilla.org/latest");
-  var i = this.apiUrl.length - 1, lastChar = this.apiUrl.charAt(i);
-  if (lastChar == '/')
-    this.apiUrl = this.apiUrl(0, i);
+  this.apiUrl = this.apiUrl.replace(/\/$/, "");
 }
 
 BugzillaClient.prototype = {
@@ -17,9 +15,9 @@ BugzillaClient.prototype = {
        callback = params;
        params = {};
     }
-    this.APIRequest('/bug/' + id, 'GET', callback, null, null, params);  
+    this.APIRequest('/bug/' + id, 'GET', callback, null, null, params);
   },
-  
+
   searchBugs : function(params, callback) {
     this.APIRequest('/bug', 'GET', callback, 'bugs', null, params);
   },
@@ -35,15 +33,15 @@ BugzillaClient.prototype = {
   createBug : function(bug, callback) {
     this.APIRequest('/bug', 'POST', callback, 'ref', bug);
   },
-  
+
   bugComments : function(id, callback) {
     this.APIRequest('/bug/' + id + '/comment', 'GET', callback, 'comments');
   },
-  
+
   addComment : function(id, comment, callback) {
     this.APIRequest('/bug/' + id + '/comment', 'POST', callback, 'ref', comment);
   },
-  
+
   bugHistory : function(id, callback) {
     this.APIRequest('/bug/' + id + '/history', 'GET', callback, 'history');
   },
@@ -59,13 +57,13 @@ BugzillaClient.prototype = {
   createAttachment : function(id, attachment, callback) {
     this.APIRequest('/bug/' + id + '/attachment', 'POST', callback, 'ref', attachment);
   },
-  
+
   getAttachment : function(id, callback) {
     this.APIRequest('/attachment/' + id, 'GET', callback);
   },
-  
+
   updateAttachment : function(id, attachment, callback) {
-    this.APIRequest('/attachment/' + id, 'PUT', callback, 'ok', attachment);        
+    this.APIRequest('/attachment/' + id, 'PUT', callback, 'ok', attachment);
   },
 
   searchUsers : function(match, callback) {
@@ -75,7 +73,7 @@ BugzillaClient.prototype = {
   getUser : function(id, callback) {
     this.APIRequest('/user/' + id, 'GET', callback);
   },
-  
+
   getConfiguration : function(params, callback) {
     if (!callback) {
        callback = params;
@@ -93,9 +91,9 @@ BugzillaClient.prototype = {
     }
     if(params)
       url += "?" + this.urlEncode(params);
-      
+
     body = JSON.stringify(body);
-     
+
     try {
       XMLHttpRequest = require("xhr").XMLHttpRequest; // Addon SDK
     }
@@ -113,7 +111,7 @@ BugzillaClient.prototype = {
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
           that.handleResponse(null, req, callback, field);
-        } 
+        }
       };
       req.timeout = this.timeout;
       req.ontimeout = function (event) {
@@ -144,7 +142,7 @@ BugzillaClient.prototype = {
       );
     }
   },
-  
+
   handleResponse : function(err, response, callback, field) {
     var error, json;
     if (err && err.code && (err.code == 'ETIMEDOUT' || err.code == 'ESOCKETTIMEDOUT'))
@@ -159,7 +157,7 @@ BugzillaClient.prototype = {
       try {
         json = JSON.parse(response.responseText);
       } catch(e) {
-        error = "Response wasn't valid json: '" + response.responseText + "'";         
+        error = "Response wasn't valid json: '" + response.responseText + "'";
       }
     }
     if(json && json.error)
@@ -174,7 +172,7 @@ BugzillaClient.prototype = {
     }
     callback(error, ret);
   },
-  
+
   urlEncode : function(params) {
     var url = [];
     for(var param in params) {
