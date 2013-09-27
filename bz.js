@@ -74,6 +74,12 @@ BugzillaClient.prototype = {
     this.APIRequest('/user/' + id, 'GET', callback);
   },
 
+  getSuggestedReviewers: function(id, callback) {
+    // BMO- specific extension to get suggested reviewers for a given bug
+    // http://bzr.mozilla.org/bmo/4.2/view/head:/extensions/Review/lib/WebService.pm#L102
+    this.APIRequest('/review/suggestions/' + id, 'GET', callback);
+  },
+
   getConfiguration : function(params, callback) {
     if (!callback) {
        callback = params;
@@ -129,7 +135,10 @@ BugzillaClient.prototype = {
         uri: url,
         method: method,
         body: body,
-        headers: {'Content-type': 'application/json'}
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       };
       if (this.timeout > 0)
         requestParams.timeout = this.timeout;
