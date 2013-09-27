@@ -27,5 +27,6 @@ bugzilla = bz.createClient({
 });
 
 bugzilla.getConfiguration(function (error, config) {
-  assert.equal("timeout", error);
+  assert.equal("ETIMEDOUT", error);
+  console.log(error.toString())
 });
