@@ -1,3 +1,5 @@
+var debugResponse = require('debug')('bz:response');
+
 var BugzillaClient = function(options) {
   options = options || {};
   this.username = options.username;
@@ -50,8 +52,20 @@ BugzillaClient.prototype = {
     this.APIRequest('/bug/' + id + '/flag', 'GET', callback, 'flags');
   },
 
+  /**
+   * Finds all attachments for a given bug #
+   * http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/Bug.html#attachments
+   *
+   * @param {Number} id of bug.
+   * @param {Function} [Error, Array<Attachment>].
+   */
   bugAttachments : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/attachment', 'GET', callback, 'attachments');
+    function handler(err, response) {
+      if (err) return callback(err);
+      callback(null, response.bugs[id]);
+    }
+
+    this.APIRequest('/bug/' + id + '/attachment', 'GET', handler);
   },
 
   createAttachment : function(id, attachment, callback) {
@@ -169,6 +183,9 @@ BugzillaClient.prototype = {
         error = "Response wasn't valid json: '" + response.responseText + "'";
       }
     }
+
+    debugResponse('raw json', json);
+
     if(json && json.error)
       error = json.error.message;
     var ret;
