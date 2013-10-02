@@ -1,5 +1,5 @@
 suite('bug attachment', function() {
-  var bz = bzFactory();
+  var bz = require('../../').createClient();
 
   test('success', function(done) {
     bz.bugAttachments(835285, function(error, attachments) {
