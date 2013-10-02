@@ -1,6 +1,8 @@
 # bz.js
 
-A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
+This 1.0x branch is for the built in [bugzilla rest interface](http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/Server/REST.html)
+
+The built in rest api is _not_ backwards compatible with the original bugzilla rest extension [bzapi](https://wiki.mozilla.org/Bugzilla:REST_API).
 
 # install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
