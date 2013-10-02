@@ -5,9 +5,8 @@ var BugzillaClient = function(options) {
   this.username = options.username;
   this.password = options.password;
   this.timeout = options.timeout || 0;
-  this.apiUrl = options.url ||
-    (options.test ? "https://api-dev.bugzilla.mozilla.org/test/latest"
-                  : "https://api-dev.bugzilla.mozilla.org/latest");
+  // TODO: we don't have a rest test endpoint yet!
+  this.apiUrl = options.url || 'https://bugzilla.mozilla.org/rest/';
   this.apiUrl = this.apiUrl.replace(/\/$/, "");
 }
 
