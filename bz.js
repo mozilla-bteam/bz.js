@@ -2,6 +2,7 @@ var debugResponse = require('debug')('bz:response');
 
 var BugzillaClient = function(options) {
   options = options || {};
+
   this.username = options.username;
   this.password = options.password;
   this.timeout = options.timeout || 0;
