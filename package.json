@@ -1,20 +1,26 @@
 {
-    "name": "bz",
-    "description": "Bugzilla REST API wrapper",
-    "version": "0.3.0",
-    "author": "Heather Arthur <fayearthur@gmail.com>",
-    "keywords": ["bugzilla"],
-    "repository": {
-        "url": "http://github.com/harthur/bz.js.git",
-        "type": "git"
-    },
-    "main": "./bz",
-    "dependencies": {
-        "request": "1.9.x"
-    },
-    "devDependencies": {
-        "connect": "*",
-        "browserify": ">=1.0.0"
-    },
-    "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0"
+  "name": "bz",
+  "description": "Bugzilla REST API wrapper",
+  "version": "1.0.0-alpha.2",
+  "author": "Heather Arthur <fayearthur@gmail.com>",
+  "keywords": [
+    "bugzilla"
+  ],
+  "repository": {
+    "url": "http://github.com/harthur/bz.js.git",
+    "type": "git"
+  },
+  "main": "./bz",
+  "dependencies": {
+    "request": "1.9.x"
+  },
+  "devDependencies": {
+    "connect": "*",
+    "browserify": ">=1.0.0",
+    "mocha": "~1.13.0"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0"
 }
