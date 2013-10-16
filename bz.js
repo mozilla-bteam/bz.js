@@ -2,10 +2,15 @@ var debugResponse = require('debug')('bz:response');
 
 var BugzillaClient = function(options) {
   options = options || {};
+
   this.username = options.username;
   this.password = options.password;
   this.timeout = options.timeout || 0;
-  // TODO: we don't have a rest test endpoint yet!
+
+  if (options.test) {
+    throw new Error('options.test is deprecated please specify the url directly');
+  }
+
   this.apiUrl = options.url || 'https://bugzilla.mozilla.org/rest/';
   this.apiUrl = this.apiUrl.replace(/\/$/, "");
 }
