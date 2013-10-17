@@ -12,7 +12,8 @@
   },
   "main": "./bz",
   "dependencies": {
-    "request": "1.9.x"
+    "request": "1.9.x",
+    "debug": "~0.7.2"
   },
   "devDependencies": {
     "connect": "*",
