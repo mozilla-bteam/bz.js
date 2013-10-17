@@ -91,3 +91,10 @@ retrieves a [user](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#User) give
 `getConfiguration(options, callback)`  
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server.
 
+
+# hacking
+
+For the integration tests you may need a test bugzilla instance.
+To setup the credentials for the test instance see test/config.json.tpl.
+Copy the template to test/config.json and then you should be able to run
+the full set of integration tests.

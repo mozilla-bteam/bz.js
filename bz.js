@@ -1,5 +1,39 @@
 var debugResponse = require('debug')('bz:response');
 
+/**
+Constant for the login entrypoint.
+*/
+var LOGIN = '/login';
+
+/**
+Function decorator which will attempt to login to bugzilla
+with the current credentials prior to making the actual api call.
+
+    Bugzilla.prototype.method = login(function(param, param) {
+    });
+
+@param {Function} method to decorate.
+@return {Function} decorated method.
+*/
+function loginRequired(method) {
+  // we assume this is a valid bugilla instance.
+  return function() {
+    // remember |this| is a bugzilla instance
+
+    // args for the decorated method
+    var args = Array.prototype.slice.call(arguments),
+        // we need the callback so we can pass login related errors.
+        callback = args[args.length - 1];
+
+    this.login(function(err) {
+      if (err) return callback(err);
+
+      // we are now logged in so the method can run!
+      method.apply(this, args);
+    }.bind(this));
+  };
+}
+
 var BugzillaClient = function(options) {
   options = options || {};
 
@@ -16,6 +50,46 @@ var BugzillaClient = function(options) {
 }
 
 BugzillaClient.prototype = {
+
+  /**
+  Authentication details for given user.
+
+  Example:
+    
+      { id: 1222, token: 'xxxx' }
+
+  @type {Object}
+  */
+  _auth: null,
+
+  /**
+  In the REST API we first login to acquire a token which is then used to make 
+  requests. See: http://bzr.mozilla.org/bmo/4.2/view/head:/Bugzilla/WebService/Server/REST.pm#L556
+
+  This method can be used publicly but is designed for internal consumption for
+  ease of use.
+
+  @param {Function} callback [Error err, String token].
+  */
+  login: function(callback) {
+    if (!this.username || !this.password) {
+      throw new Error('missing or invalid .username or .password');
+    }
+
+    var params = {
+      login: this.username,
+      password: this.password
+    };
+
+    var handleLogin = function handleLogin(err, response) {
+      if (err) return callback(err);
+      this._auth = response;
+      callback(null, response);
+    }.bind(this);
+
+    this.APIRequest('/login', 'GET', handleLogin, null, null, params);
+  },
+
   getBug : function(id, params, callback) {
     if (!callback) {
        callback = params;
@@ -36,9 +110,9 @@ BugzillaClient.prototype = {
     this.APIRequest('/bug/' + id, 'PUT', callback, 'ok', bug);
   },
 
-  createBug : function(bug, callback) {
-    this.APIRequest('/bug', 'POST', callback, 'ref', bug);
-  },
+  createBug : loginRequired(function(bug, callback) {
+    this.APIRequest('/bug', 'POST', callback, 'id', bug);
+  }),
 
   bugComments : function(id, callback) {
     this.APIRequest('/bug/' + id + '/comment', 'GET', callback, 'comments');
@@ -106,13 +180,36 @@ BugzillaClient.prototype = {
     this.APIRequest('/configuration', 'GET', callback, null, null, params);
   },
 
-  APIRequest : function(path, method, callback, field, body, params) {
-    var url = this.apiUrl + path;
-    if(this.username && this.password) {
-      params = params || {};
-      params.username = this.username;
-      params.password = this.password;
+  APIRequest: function(path, method, callback, field, body, params) {
+    if (
+      // if we are doing the login
+      path === LOGIN ||
+      // if we are already authed
+      this._auth ||
+      // or we are missing auth data
+      !this.password || !this.username
+    ) {
+      // skip automatic authentication
+      return this._APIRequest.apply(this, arguments);
     }
+
+    // so we can pass the arguments inside of another function
+    var args = Array.prototype.slice.call(arguments);
+
+    this.login(function(err) {
+      if (err) return callback(err);
+      this._APIRequest.apply(this, args);
+    }.bind(this));
+  },
+
+  _APIRequest : function(path, method, callback, field, body, params) {
+    var url = this.apiUrl + path;
+    if (this._auth) {
+      params = params || {};
+      // bugzilla authentication token
+      params.Bugzilla_token = this._auth.token;
+    }
+
     if(params)
       url += "?" + this.urlEncode(params);
 
@@ -195,10 +292,6 @@ BugzillaClient.prototype = {
     var ret;
     if(!error) {
       ret = field ? json[field] : json;
-      if(field == 'ref') {// creation returns API ref url with id of created object at end
-        var match = ret.match(/(\d+)$/);
-        ret = match ? parseInt(match[0]) : true;
-      }
     }
     callback(error, ret);
   },
