@@ -163,7 +163,12 @@ BugzillaClient.prototype = {
   },
 
   bugHistory : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/history', 'GET', callback, 'history');
+    this.APIRequest(
+      '/bug/' + id + '/history',
+      'GET',
+      callback,
+      'bugs'
+    );
   },
 
   bugFlags : function(id, callback) {
