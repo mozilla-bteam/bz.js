@@ -21,9 +21,7 @@ suite('create a bug', function() {
     });
 
     test('saves bug', function(done) {
-      client.getBug(bugNumber, function(err, bugs) {
-        var bug = bugs.bugs[0];
-
+      client.getBug(bugNumber, function(err, bug) {
         for (var key in bugFixture) {
           assert.equal(bugFixture[key], bug[key]);
         }

@@ -13,6 +13,7 @@ var TIMEOUT_ERRORS = ['ETIMEDOUT', 'ESOCKETTIMEDOUT'];
 function extractField(field, callback) {
   return function(err, response) {
     if (err) return callback(err);
+    if (!response[field]) return callback();
     var ids = Object.keys(response[field]);
     callback(null, response[field][ids[0]]);
   };
@@ -105,7 +106,15 @@ BugzillaClient.prototype = {
        callback = params;
        params = {};
     }
-    this.APIRequest('/bug/' + id, 'GET', callback, null, null, params);
+
+    this.APIRequest(
+      '/bug/' + id,
+      'GET',
+      extractField('bugs', callback),
+      null,
+      null,
+      params
+    );
   },
 
   searchBugs : function(params, callback) {
