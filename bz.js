@@ -6,6 +6,19 @@ Constant for the login entrypoint.
 var LOGIN = '/login';
 
 /**
+Errors related to the socket timeout.
+*/
+var TIMEOUT_ERRORS = ['ETIMEDOUT', 'ESOCKETTIMEDOUT'];
+
+function extractField(field, callback) {
+  return function(err, response) {
+    if (err) return callback(err);
+    var ids = Object.keys(response[field]);
+    callback(null, response[field][ids[0]]);
+  };
+}
+
+/**
 Function decorator which will attempt to login to bugzilla
 with the current credentials prior to making the actual api call.
 
@@ -154,11 +167,20 @@ BugzillaClient.prototype = {
   },
 
   createAttachment : function(id, attachment, callback) {
-    this.APIRequest('/bug/' + id + '/attachment', 'POST', callback, 'ref', attachment);
+    this.APIRequest(
+      '/bug/' + id + '/attachment',
+      'POST',
+      extractField('attachments', callback),
+      null, attachment
+    );
   },
 
   getAttachment : function(id, callback) {
-    this.APIRequest('/attachment/' + id, 'GET', callback);
+    this.APIRequest(
+      '/bug/attachment/' + id,
+      'GET',
+      extractField('attachments', callback)
+    );
   },
 
   updateAttachment : function(id, attachment, callback) {
@@ -275,32 +297,40 @@ BugzillaClient.prototype = {
   },
 
   handleResponse : function(err, response, callback, field) {
-    var error, json;
-    if (err && err.code && (err.code == 'ETIMEDOUT' || err.code == 'ESOCKETTIMEDOUT'))
-      err = 'timeout';
-    else if (err)
-      err = err.toString();
-    if(err)
-      error = err;
-    else if(response.status >= 300 || response.status < 200)
-      error = "HTTP status " + response.status;
-    else {
-      try {
-        json = JSON.parse(response.responseText);
-      } catch(e) {
-        error = "Response wasn't valid json: '" + response.responseText + "'";
+    // detect timeout errors
+    if (err && err.code && TIMEOUT_ERRORS.indexOf(err.code) !== -1) {
+      return callback(new Error('timeout'));
+    }
+
+    // handle generic errors
+    if (err) return callback(err);
+
+    // anything in 200 status range is a success
+    var requestSuccessful = response.status > 199 && response.status < 300;
+
+    // even in the case of an unsuccessful request we may have json data.
+    var parsedBody;
+
+    try {
+      parsedBody = JSON.parse(response.responseText);
+    } catch (e) {
+      // XXX: might want to handle this better in the request success case?
+      if (requestSuccessful) {
+        return callback(
+          new Error('response was not valid json: ' + response.responseText)
+        );
       }
     }
 
-    debugResponse('raw json', json);
-
-    if(json && json.error)
-      error = json.error.message;
-    var ret;
-    if(!error) {
-      ret = field ? json[field] : json;
+    if (!requestSuccessful) {
+      return callback(new Error(
+        'HTTP status ' + response.status + '\n' +
+        (parsedBody && parsedBody.message) ? parsedBody.message : ''
+      ));
     }
-    callback(error, ret);
+
+    debugResponse('raw json', parsedBody);
+    callback(null, (field) ? parsedBody[field] : parsedBody);
   },
 
   urlEncode : function(params) {

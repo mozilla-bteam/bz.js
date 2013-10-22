@@ -1,11 +1,11 @@
 suite('create a bug', function() {
   var client;
   setup(function() {
-    client = require('../support/client')();
+    client = require('./support/client')();
   });
 
   test('invalid login', function() {
-    var client = require('../../../').createClient({
+    var client = require('../../').createClient({
       url: 'http://foobar.com'
     });
 

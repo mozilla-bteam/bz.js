@@ -1,19 +1,9 @@
 suite('create a bug', function() {
-  var client = require('../support/client')(),
-      publicClient = require('../../../').createClient();
+  var client = require('./support/client')(),
+      publicClient = require('../../').createClient();
 
   // http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/Bug.html#create
-  var bugFixture = {
-    // these are BMO specific
-    product: 'Testing',
-    component: 'Marionette',
-    summary: 'test bug!',
-    version: 'unspecified', // this is a made up number
-    op_sys: 'All',
-    priority: 'P1',
-    platform: 'All'
-  };
-
+  var bugFixture = require('./support/bug_factory')();
 
   test('unauthorized createBug', function() {
     assert.throws(function() {
