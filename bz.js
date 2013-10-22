@@ -11,7 +11,7 @@ Errors related to the socket timeout.
 */
 var TIMEOUT_ERRORS = ['ETIMEDOUT', 'ESOCKETTIMEDOUT'];
 
-function extractField(field, id, callback) {
+function extractField(id, callback) {
   if (typeof id === 'function') {
     callback = id;
     id = undefined;
@@ -19,15 +19,14 @@ function extractField(field, id, callback) {
 
   return function(err, response) {
     if (err) return callback(err);
-    if (!response[field]) return callback();
 
     // default behavior is to use the first id when the caller does not provide
     // one.
     if (id === undefined) {
-      id = Object.keys(response[field])[0];
+      id = Object.keys(response)[0];
     }
 
-    callback(null, response[field][id]);
+    callback(null, response[id]);
   };
 }
 
@@ -78,7 +77,7 @@ BugzillaClient.prototype = {
   Authentication details for given user.
 
   Example:
-    
+
       { id: 1222, token: 'xxxx' }
 
   @type {Object}
@@ -122,8 +121,8 @@ BugzillaClient.prototype = {
     this.APIRequest(
       '/bug/' + id,
       'GET',
-      extractField('bugs', callback),
-      null,
+      extractField(callback),
+      'bugs',
       null,
       params
     );
@@ -172,7 +171,8 @@ BugzillaClient.prototype = {
     this.APIRequest(
       '/bug/' + id + '/attachment',
       'GET',
-      extractField('bugs', id, callback)
+      extractField(id, callback),
+      'bugs'
     );
   },
 
@@ -190,8 +190,9 @@ BugzillaClient.prototype = {
     this.APIRequest(
       '/bug/' + id + '/attachment',
       'POST',
-      extractField('attachments', callback),
-      null, attachment
+      extractField(callback),
+      'attachments',
+      attachment
     );
   },
 
@@ -199,7 +200,8 @@ BugzillaClient.prototype = {
     this.APIRequest(
       '/bug/attachment/' + id,
       'GET',
-      extractField('attachments', callback)
+      extractField(callback),
+      'attachments'
     );
   },
 
