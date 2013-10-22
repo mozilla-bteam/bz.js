@@ -195,7 +195,7 @@ BugzillaClient.prototype = {
   },
 
   updateAttachment : function(id, attachment, callback) {
-    this.APIRequest('/attachment/' + id, 'PUT', callback, 'ok', attachment);
+    this.APIRequest('/bug/attachment/' + id, 'PUT', callback, 'ok', attachment);
   },
 
   searchUsers : function(match, callback) {
