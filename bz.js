@@ -132,10 +132,6 @@ BugzillaClient.prototype = {
     this.APIRequest('/bug', 'GET', callback, 'bugs', null, params);
   },
 
-  countBugs : function(params, callback) {
-    this.APIRequest('/count', 'GET', callback, 'data', null, params);
-  },
-
   updateBug : loginRequired(function(id, bug, callback) {
     this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
   }),

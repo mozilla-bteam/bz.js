@@ -49,9 +49,6 @@ retrieves a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) given 
 `searchBugs(searchParams, callback)`  
 searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and fetches an array of [bugs](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug).
 
-`countBugs(searchParams, callback)`  
-searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and gets a integer count of bugs matching that query.
-
 `createBug(bug, callback)`  
 creates a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) and returns the id of the newly created bug.
 
