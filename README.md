@@ -95,9 +95,16 @@ retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAP
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server.
 
 
-# hacking
+# Tests
 
-For the integration tests you may need a test bugzilla instance.
-To setup the credentials for the test instance see test/config.json.tpl.
-Copy the template to test/config.json and then you should be able to run
-the full set of integration tests.
+You need [vagrant](http://www.vagrantup.com/) installed.
+
+run:
+
+```sh
+vagrant up
+make test
+```
+
+This will run a set of integration tests on a real bugzilla (bmo
+variant) server.
