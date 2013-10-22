@@ -3,10 +3,12 @@ suite('create a bug', function() {
       publicClient = require('../../').createClient();
 
   // http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/Bug.html#create
-  var bugFixture = require('./support/bug_factory')();
 
-  function createBug() {
-    var result = {};
+  function createBug(overrides) {
+    var bugFixture = require('./support/bug_factory')(overrides);
+    var result = {
+      fixture: bugFixture
+    };
     setup(function(done) {
       client.createBug(bugFixture, function(err, bugNumber) {
         result.id = bugNumber;
@@ -43,8 +45,8 @@ suite('create a bug', function() {
     test('saves bug', function(done) {
       client.getBug(record.id, function(err, bug) {
         assert.ok(!err, 'is successful');
-        for (var key in bugFixture) {
-          assert.equal(bugFixture[key], bug[key]);
+        for (var key in record.fixture) {
+          assert.equal(record.fixture[key], bug[key]);
         }
         done();
       });
@@ -83,6 +85,21 @@ suite('create a bug', function() {
         done(err);
       });
     });
+  });
 
+  suite('#searchBugs', function() {
+    var term = 'izmagicall-' + Date.now();
+    var record = createBug({
+      summary: term
+    });
+
+    test('search results', function(done) {
+      client.searchBugs({ summary: term }, function(err, result) {
+        assert(Array.isArray(result));
+        var bug = result[0];
+        assert.equal(bug.id, record.id);
+        done(err);
+      });
+    });
   });
 });
