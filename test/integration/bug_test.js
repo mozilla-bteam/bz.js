@@ -1,6 +1,7 @@
 suite('create a bug', function() {
   var client = require('./support/client')(),
-      publicClient = require('../../').createClient();
+      publicClient = require('../../').createClient(),
+      createBug = require('./support/create_bug');
 
   // http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/Bug.html#create
 

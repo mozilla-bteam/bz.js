@@ -141,11 +141,25 @@ BugzillaClient.prototype = {
   }),
 
   bugComments : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/comment', 'GET', callback, 'comments');
+    this.APIRequest(
+      '/bug/' + id + '/comment',
+      'GET',
+      extractField(id, function(err, response) {
+        if (err) return callback(err);
+        callback(null, response.comments);
+      }),
+      'bugs'
+    );
   },
 
   addComment : function(id, comment, callback) {
-    this.APIRequest('/bug/' + id + '/comment', 'POST', callback, 'ref', comment);
+    this.APIRequest(
+      '/bug/' + id + '/comment',
+      'POST',
+      callback,
+      null,
+      comment
+    );
   },
 
   bugHistory : function(id, callback) {
@@ -350,6 +364,7 @@ BugzillaClient.prototype = {
     if (!requestSuccessful) {
       return callback(new Error(
         'HTTP status ' + response.status + '\n' +
+        // note intentional use of != instead of !==
         (parsedBody && parsedBody.message) ? parsedBody.message : ''
       ));
     }
