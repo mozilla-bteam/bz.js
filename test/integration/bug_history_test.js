@@ -1,4 +1,4 @@
-suite('create a bug', function() {
+suite('bug/*/history', function() {
   var client = require('./support/client')(),
       publicClient = require('../../').createClient(),
       createBug = require('./support/create_bug');
@@ -14,7 +14,6 @@ suite('create a bug', function() {
 
   test('#bugHistory', function(done) {
     client.bugHistory(bug.id, function(err, list) {
-      console.log(list);
       assert(Array.isArray(list), 'is a list');
       assert.ok(list[0].history, 'has .history');
       done();

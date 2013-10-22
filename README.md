@@ -64,9 +64,6 @@ adds a [comment](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Comment) to 
 `bugHistory(id, callback)`  
 retrieves array of [changes](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#ChangeSet) for a bug.
 
-`bugFlags(id, callback)`  
-retrieves array of [flags](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Flag) for a bug.
-
 `bugAttachments(id, callback)`  
 retrieves array of [attachments](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Attachment) for a bug.
 

@@ -155,7 +155,7 @@ BugzillaClient.prototype = {
     );
   },
 
-  addComment : function(id, comment, callback) {
+  addComment : loginRequired(function(id, comment, callback) {
     this.APIRequest(
       '/bug/' + id + '/comment',
       'POST',
@@ -163,7 +163,7 @@ BugzillaClient.prototype = {
       null,
       comment
     );
-  },
+  }),
 
   bugHistory : function(id, callback) {
     this.APIRequest(
@@ -172,10 +172,6 @@ BugzillaClient.prototype = {
       callback,
       'bugs'
     );
-  },
-
-  bugFlags : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/flag', 'GET', callback, 'flags');
   },
 
   /**
@@ -222,7 +218,12 @@ BugzillaClient.prototype = {
   },
 
   getUser : function(id, callback) {
-    this.APIRequest('/user/' + id, 'GET', callback);
+    this.APIRequest(
+      '/user/' + id,
+      'GET',
+      extractField(callback),
+      'users'
+    );
   },
 
   getSuggestedReviewers: function(id, callback) {

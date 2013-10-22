@@ -1,4 +1,4 @@
-suite('create bug attachment', function() {
+suite('bug/*/attachment', function() {
   var client = require('./support/client')(),
       bugFixture = require('./support/bug_factory')(),
       bugNumber;
