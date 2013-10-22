@@ -10,7 +10,7 @@ suite('create bug attachment', function() {
     });
   });
 
-  suite('attachment', function() {
+  suite('single attachment', function() {
     var attachmentId;
     setup(function(done) {
       client.createAttachment(
@@ -47,6 +47,24 @@ suite('create bug attachment', function() {
         assert.equal(attachment.id, attachmentId);
         done();
       });
+    });
+
+    suite('update attachment', function() {
+      var newSummary = 'wootchanged';
+      setup(function(done) {
+        client.updateAttachment(attachmentId, {
+          summary: newSummary
+        }, done)
+      });
+
+      test('changed attachment', function(done) {
+        client.getAttachment(attachmentId, function(err, attachment) {
+          if (err) return done(err);
+          assert.equal(attachment.summary, newSummary);
+          done();
+        });
+      });
+
     });
   });
 });
