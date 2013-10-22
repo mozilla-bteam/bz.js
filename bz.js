@@ -1,4 +1,5 @@
 var debugResponse = require('debug')('bz:response');
+var debugRequest = require('debug')('bz:request');
 
 /**
 Constant for the login entrypoint.
@@ -10,12 +11,23 @@ Errors related to the socket timeout.
 */
 var TIMEOUT_ERRORS = ['ETIMEDOUT', 'ESOCKETTIMEDOUT'];
 
-function extractField(field, callback) {
+function extractField(field, id, callback) {
+  if (typeof id === 'function') {
+    callback = id;
+    id = undefined;
+  }
+
   return function(err, response) {
     if (err) return callback(err);
     if (!response[field]) return callback();
-    var ids = Object.keys(response[field]);
-    callback(null, response[field][ids[0]]);
+
+    // default behavior is to use the first id when the caller does not provide
+    // one.
+    if (id === undefined) {
+      id = Object.keys(response[field])[0];
+    }
+
+    callback(null, response[field][id]);
   };
 }
 
@@ -128,9 +140,9 @@ BugzillaClient.prototype = {
     this.APIRequest('/count', 'GET', callback, 'data', null, params);
   },
 
-  updateBug : function(id, bug, callback) {
-    this.APIRequest('/bug/' + id, 'PUT', callback, 'ok', bug);
-  },
+  updateBug : loginRequired(function(id, bug, callback) {
+    this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
+  }),
 
   createBug : loginRequired(function(bug, callback) {
     this.APIRequest('/bug', 'POST', callback, 'id', bug);
@@ -160,12 +172,11 @@ BugzillaClient.prototype = {
    * @param {Function} [Error, Array<Attachment>].
    */
   bugAttachments : function(id, callback) {
-    function handler(err, response) {
-      if (err) return callback(err);
-      callback(null, response.bugs[id]);
-    }
-
-    this.APIRequest('/bug/' + id + '/attachment', 'GET', handler);
+    this.APIRequest(
+      '/bug/' + id + '/attachment',
+      'GET',
+      extractField('bugs', id, callback)
+    );
   },
 
   createAttachment : function(id, attachment, callback) {
@@ -212,6 +223,7 @@ BugzillaClient.prototype = {
   },
 
   APIRequest: function(path, method, callback, field, body, params) {
+    debugRequest(path, method, body, params);
     if (
       // if we are doing the login
       path === LOGIN ||
@@ -322,6 +334,12 @@ BugzillaClient.prototype = {
           new Error('response was not valid json: ' + response.responseText)
         );
       }
+    }
+
+    // successful http respnse but an error
+    // XXX: this seems like a bug in the api.
+    if (parsedBody && parsedBody.error) {
+      requestSuccessful = false;
     }
 
     if (!requestSuccessful) {
