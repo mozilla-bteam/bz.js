@@ -1,4 +1,4 @@
-suite('create a bug', function() {
+suite('bug/*', function() {
   var client = require('./support/client')(),
       publicClient = require('../../').createClient(),
       createBug = require('./support/create_bug');
