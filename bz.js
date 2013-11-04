@@ -1,4 +1,63 @@
 var debugResponse = require('debug')('bz:response');
+var debugRequest = require('debug')('bz:request');
+
+/**
+Constant for the login entrypoint.
+*/
+var LOGIN = '/login';
+
+/**
+Errors related to the socket timeout.
+*/
+var TIMEOUT_ERRORS = ['ETIMEDOUT', 'ESOCKETTIMEDOUT'];
+
+function extractField(id, callback) {
+  if (typeof id === 'function') {
+    callback = id;
+    id = undefined;
+  }
+
+  return function(err, response) {
+    if (err) return callback(err);
+
+    // default behavior is to use the first id when the caller does not provide
+    // one.
+    if (id === undefined) {
+      id = Object.keys(response)[0];
+    }
+
+    callback(null, response[id]);
+  };
+}
+
+/**
+Function decorator which will attempt to login to bugzilla
+with the current credentials prior to making the actual api call.
+
+    Bugzilla.prototype.method = login(function(param, param) {
+    });
+
+@param {Function} method to decorate.
+@return {Function} decorated method.
+*/
+function loginRequired(method) {
+  // we assume this is a valid bugilla instance.
+  return function() {
+    // remember |this| is a bugzilla instance
+
+    // args for the decorated method
+    var args = Array.prototype.slice.call(arguments),
+        // we need the callback so we can pass login related errors.
+        callback = args[args.length - 1];
+
+    this.login(function(err) {
+      if (err) return callback(err);
+
+      // we are now logged in so the method can run!
+      method.apply(this, args);
+    }.bind(this));
+  };
+}
 
 var BugzillaClient = function(options) {
   options = options || {};
@@ -16,44 +75,103 @@ var BugzillaClient = function(options) {
 }
 
 BugzillaClient.prototype = {
+
+  /**
+  Authentication details for given user.
+
+  Example:
+
+      { id: 1222, token: 'xxxx' }
+
+  @type {Object}
+  */
+  _auth: null,
+
+  /**
+  In the REST API we first login to acquire a token which is then used to make 
+  requests. See: http://bzr.mozilla.org/bmo/4.2/view/head:/Bugzilla/WebService/Server/REST.pm#L556
+
+  This method can be used publicly but is designed for internal consumption for
+  ease of use.
+
+  @param {Function} callback [Error err, String token].
+  */
+  login: function(callback) {
+    if (!this.username || !this.password) {
+      throw new Error('missing or invalid .username or .password');
+    }
+
+    var params = {
+      login: this.username,
+      password: this.password
+    };
+
+    var handleLogin = function handleLogin(err, response) {
+      if (err) return callback(err);
+      this._auth = response;
+      callback(null, response);
+    }.bind(this);
+
+    this.APIRequest('/login', 'GET', handleLogin, null, null, params);
+  },
+
   getBug : function(id, params, callback) {
     if (!callback) {
        callback = params;
        params = {};
     }
-    this.APIRequest('/bug/' + id, 'GET', callback, null, null, params);
+
+    this.APIRequest(
+      '/bug/' + id,
+      'GET',
+      extractField(callback),
+      'bugs',
+      null,
+      params
+    );
   },
 
   searchBugs : function(params, callback) {
     this.APIRequest('/bug', 'GET', callback, 'bugs', null, params);
   },
 
-  countBugs : function(params, callback) {
-    this.APIRequest('/count', 'GET', callback, 'data', null, params);
-  },
+  updateBug : loginRequired(function(id, bug, callback) {
+    this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
+  }),
 
-  updateBug : function(id, bug, callback) {
-    this.APIRequest('/bug/' + id, 'PUT', callback, 'ok', bug);
-  },
-
-  createBug : function(bug, callback) {
-    this.APIRequest('/bug', 'POST', callback, 'ref', bug);
-  },
+  createBug : loginRequired(function(bug, callback) {
+    this.APIRequest('/bug', 'POST', callback, 'id', bug);
+  }),
 
   bugComments : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/comment', 'GET', callback, 'comments');
+    this.APIRequest(
+      '/bug/' + id + '/comment',
+      'GET',
+      extractField(id, function(err, response) {
+        if (err) return callback(err);
+        callback(null, response.comments);
+      }),
+      'bugs'
+    );
   },
 
-  addComment : function(id, comment, callback) {
-    this.APIRequest('/bug/' + id + '/comment', 'POST', callback, 'ref', comment);
-  },
+  addComment : loginRequired(function(id, comment, callback) {
+    this.APIRequest(
+      '/bug/' + id + '/comment',
+      'POST',
+      callback,
+      null,
+      comment
+    );
+  }),
 
   bugHistory : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/history', 'GET', callback, 'history');
-  },
-
-  bugFlags : function(id, callback) {
-    this.APIRequest('/bug/' + id + '/flag', 'GET', callback, 'flags');
+    this.APIRequest(
+      '/bug/' + id + '/history',
+      'GET',
+      callback,
+      'bugs'
+    );
   },
 
   /**
@@ -64,24 +182,35 @@ BugzillaClient.prototype = {
    * @param {Function} [Error, Array<Attachment>].
    */
   bugAttachments : function(id, callback) {
-    function handler(err, response) {
-      if (err) return callback(err);
-      callback(null, response.bugs[id]);
-    }
-
-    this.APIRequest('/bug/' + id + '/attachment', 'GET', handler);
+    this.APIRequest(
+      '/bug/' + id + '/attachment',
+      'GET',
+      extractField(id, callback),
+      'bugs'
+    );
   },
 
   createAttachment : function(id, attachment, callback) {
-    this.APIRequest('/bug/' + id + '/attachment', 'POST', callback, 'ref', attachment);
+    this.APIRequest(
+      '/bug/' + id + '/attachment',
+      'POST',
+      extractField(callback),
+      'attachments',
+      attachment
+    );
   },
 
   getAttachment : function(id, callback) {
-    this.APIRequest('/attachment/' + id, 'GET', callback);
+    this.APIRequest(
+      '/bug/attachment/' + id,
+      'GET',
+      extractField(callback),
+      'attachments'
+    );
   },
 
   updateAttachment : function(id, attachment, callback) {
-    this.APIRequest('/attachment/' + id, 'PUT', callback, 'ok', attachment);
+    this.APIRequest('/bug/attachment/' + id, 'PUT', callback, 'ok', attachment);
   },
 
   searchUsers : function(match, callback) {
@@ -89,7 +218,12 @@ BugzillaClient.prototype = {
   },
 
   getUser : function(id, callback) {
-    this.APIRequest('/user/' + id, 'GET', callback);
+    this.APIRequest(
+      '/user/' + id,
+      'GET',
+      extractField(callback),
+      'users'
+    );
   },
 
   getSuggestedReviewers: function(id, callback) {
@@ -106,13 +240,37 @@ BugzillaClient.prototype = {
     this.APIRequest('/configuration', 'GET', callback, null, null, params);
   },
 
-  APIRequest : function(path, method, callback, field, body, params) {
-    var url = this.apiUrl + path;
-    if(this.username && this.password) {
-      params = params || {};
-      params.username = this.username;
-      params.password = this.password;
+  APIRequest: function(path, method, callback, field, body, params) {
+    debugRequest(path, method, body, params);
+    if (
+      // if we are doing the login
+      path === LOGIN ||
+      // if we are already authed
+      this._auth ||
+      // or we are missing auth data
+      !this.password || !this.username
+    ) {
+      // skip automatic authentication
+      return this._APIRequest.apply(this, arguments);
     }
+
+    // so we can pass the arguments inside of another function
+    var args = Array.prototype.slice.call(arguments);
+
+    this.login(function(err) {
+      if (err) return callback(err);
+      this._APIRequest.apply(this, args);
+    }.bind(this));
+  },
+
+  _APIRequest : function(path, method, callback, field, body, params) {
+    var url = this.apiUrl + path;
+    if (this._auth) {
+      params = params || {};
+      // bugzilla authentication token
+      params.Bugzilla_token = this._auth.token;
+    }
+
     if(params)
       url += "?" + this.urlEncode(params);
 
@@ -171,36 +329,47 @@ BugzillaClient.prototype = {
   },
 
   handleResponse : function(err, response, callback, field) {
-    var error, json;
-    if (err && err.code && (err.code == 'ETIMEDOUT' || err.code == 'ESOCKETTIMEDOUT'))
-      err = 'timeout';
-    else if (err)
-      err = err.toString();
-    if(err)
-      error = err;
-    else if(response.status >= 300 || response.status < 200)
-      error = "HTTP status " + response.status;
-    else {
-      try {
-        json = JSON.parse(response.responseText);
-      } catch(e) {
-        error = "Response wasn't valid json: '" + response.responseText + "'";
+    // detect timeout errors
+    if (err && err.code && TIMEOUT_ERRORS.indexOf(err.code) !== -1) {
+      return callback(new Error('timeout'));
+    }
+
+    // handle generic errors
+    if (err) return callback(err);
+
+    // anything in 200 status range is a success
+    var requestSuccessful = response.status > 199 && response.status < 300;
+
+    // even in the case of an unsuccessful request we may have json data.
+    var parsedBody;
+
+    try {
+      parsedBody = JSON.parse(response.responseText);
+    } catch (e) {
+      // XXX: might want to handle this better in the request success case?
+      if (requestSuccessful) {
+        return callback(
+          new Error('response was not valid json: ' + response.responseText)
+        );
       }
     }
 
-    debugResponse('raw json', json);
-
-    if(json && json.error)
-      error = json.error.message;
-    var ret;
-    if(!error) {
-      ret = field ? json[field] : json;
-      if(field == 'ref') {// creation returns API ref url with id of created object at end
-        var match = ret.match(/(\d+)$/);
-        ret = match ? parseInt(match[0]) : true;
-      }
+    // successful http respnse but an error
+    // XXX: this seems like a bug in the api.
+    if (parsedBody && parsedBody.error) {
+      requestSuccessful = false;
     }
-    callback(error, ret);
+
+    if (!requestSuccessful) {
+      return callback(new Error(
+        'HTTP status ' + response.status + '\n' +
+        // note intentional use of != instead of !==
+        (parsedBody && parsedBody.message) ? parsedBody.message : ''
+      ));
+    }
+
+    debugResponse('raw json', parsedBody);
+    callback(null, (field) ? parsedBody[field] : parsedBody);
   },
 
   urlEncode : function(params) {
