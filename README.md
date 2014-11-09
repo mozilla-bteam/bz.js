@@ -5,13 +5,13 @@ A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzil
 # install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
 
-```	
+```
 npm install bz
 ```
 
 and use with `var bz = require("bz")`
 
-For the browser, download the lastest [bz.js](http://github.com/harthur/bz.js/downloads). Or build a browser file from the source code with [browserbuild](https://github.com/LearnBoost/browserbuild): `browserbuild bz.js`.
+For the browser, download the lastest bz-<version>.js from the root directory. Or build a browser file from the source code with `grunt build`.
 
 # usage
 
