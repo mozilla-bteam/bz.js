@@ -86,6 +86,9 @@ searches for [users](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#User) by
 `getUser(userId, callback)`  
 retrieves a [user](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#User) given a user id.
 
+`getSuggestedReviewers(id, callback)`  
+retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAPI:Objects#Suggested_Reviewer) for a bug.
+
 `getConfiguration(options, callback)`  
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server.
 
