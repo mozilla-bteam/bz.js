@@ -101,7 +101,7 @@ BugzillaClient.prototype = {
     body = JSON.stringify(body);
 
     try {
-      XMLHttpRequest = require("xhr").XMLHttpRequest; // Addon SDK
+      XMLHttpRequest = require("sdk/net/xhr").XMLHttpRequest; // Addon SDK
     }
     catch(e) {}
 
