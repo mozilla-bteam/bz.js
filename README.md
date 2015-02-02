@@ -1,6 +1,8 @@
 # bz.js
 
-A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
+This 1.0x branch is for the built in [bugzilla rest interface](http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/Server/REST.html)
+
+The built in rest api is _not_ backwards compatible with the original bugzilla rest extension [bzapi](https://wiki.mozilla.org/Bugzilla:REST_API).
 
 # install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
@@ -47,9 +49,6 @@ retrieves a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) given 
 `searchBugs(searchParams, callback)`  
 searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and fetches an array of [bugs](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug).
 
-`countBugs(searchParams, callback)`  
-searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and gets a integer count of bugs matching that query.
-
 `createBug(bug, callback)`  
 creates a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) and returns the id of the newly created bug.
 
@@ -64,9 +63,6 @@ adds a [comment](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Comment) to 
 
 `bugHistory(id, callback)`  
 retrieves array of [changes](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#ChangeSet) for a bug.
-
-`bugFlags(id, callback)`  
-retrieves array of [flags](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Flag) for a bug.
 
 `bugAttachments(id, callback)`  
 retrieves array of [attachments](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Attachment) for a bug.
@@ -92,3 +88,17 @@ retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAP
 `getConfiguration(options, callback)`  
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server.
 
+
+# Tests
+
+You need [vagrant](http://www.vagrantup.com/) installed.
+
+run:
+
+```sh
+vagrant up
+make test
+```
+
+This will run a set of integration tests on a real bugzilla (bmo
+variant) server.
