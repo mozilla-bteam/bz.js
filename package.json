@@ -1,22 +1,33 @@
 {
-    "name": "bz",
-    "description": "Bugzilla REST API wrapper",
-    "version": "0.3.0",
-    "author": "Heather Arthur <fayearthur@gmail.com>",
-    "keywords": ["bugzilla"],
-    "repository": {
-        "url": "http://github.com/harthur/bz.js.git",
-        "type": "git"
-    },
-    "main": "./bz",
-    "dependencies": {
-        "request": "1.9.x"
-    },
-    "devDependencies": {
-        "connect": "*",
-        "grunt": "~0.4.3",
-        "grunt-contrib-uglify": "~0.2.0",
-        "browserify": "~3.32.0"
-    },
-    "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0"
+  "name": "bz",
+  "description": "Bugzilla REST API wrapper",
+  "version": "0.3.0",
+  "author": "Heather Arthur <fayearthur@gmail.com>",
+  "contributors": [{
+    "name": "Jeff Griffiths",
+    "email": "jeff@canuckistani.ca"
+  }],
+  "keywords": [
+    "bugzilla"
+  ],
+  "repository": {
+    "url": "http://github.com/canuckistani/bz.js.git",
+    "type": "git"
+  },
+  "main": "./bz",
+  "dependencies": {
+    "request": "^2.55.0"
+  },
+  "devDependencies": {
+    "babel": "^5.1.9",
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
+    "chai": "^2.2.0",
+    "connect": "^3.3.5",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "gulp-browserify": "^0.5.1",
+    "mocha": "^2.2.4",
+    "vinyl-source-stream": "^1.1.0"
+  }
 }
