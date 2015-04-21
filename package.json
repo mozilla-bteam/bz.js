@@ -26,7 +26,6 @@
     "connect": "^3.3.5",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
-    "gulp-browserify": "^0.5.1",
     "mocha": "^2.2.4",
     "vinyl-source-stream": "^1.1.0"
   }
