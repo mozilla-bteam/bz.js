@@ -6,7 +6,14 @@
   "contributors": [{
     "name": "Jeff Griffiths",
     "email": "jeff@canuckistani.ca"
-  }],
+  },
+    {"name": "James Lal"},
+    {"name": "Kevin Grandon"},
+    {"name": "Axel Hecht"},
+    {"name": "Josh Matthews"},
+    {"name": "Graeme McCutcheon"},
+    {"name": "Farrin Reid"}
+  ],
   "keywords": [
     "bugzilla"
   ],
@@ -14,7 +21,7 @@
     "url": "http://github.com/canuckistani/bz.js.git",
     "type": "git"
   },
-  "main": "./bz",
+  "main": "./build/node/index",
   "dependencies": {
     "request": "^2.55.0"
   },
