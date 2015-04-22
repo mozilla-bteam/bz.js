@@ -360,12 +360,3 @@ export var BugzillaClient = class {
 exports.createClient = function(options) {
   return new BugzillaClient(options);
 }
-
-if (!module.parent) {
-  var client = exports.createClient();
-
-  client.getBug(6000, (err, result) => {
-    if (err) throw err;
-    console.log(JSON.stringify(result, null, '  '));
-  });
-}
