@@ -6,12 +6,14 @@ Object.defineProperty(exports, '__esModule', {
 exports.get = get;
 exports.post = post;
 var request = undefined,
-    isJetpack = undefined;
+    isJetpack = false,
+    _loader = require;
 
 try {
-  request = require('sdk/request');
+  request = _loader('sdk/request');
+  isJetpack = true;
 } catch (err) {
-  request = require('request');
+  request = _loader('request');
 }
 
 function get(options, callback) {
@@ -22,16 +24,18 @@ function get(options, callback) {
       contentType: contentType,
       onComplete: function onComplete(response) {
         if (response.statusText !== 'OK') {
-          callback([response.status, response.statusText]);
+          options.callback([response.status, response.statusText]);
         }
-        callback(null, response.text);
+        var parsed = JSON.parse(response.text);
+        options.callback(null, parsed);
       }
     });
     _req.get();
   } else {
     request.get(options.url, function (err, response, body) {
       if (err) callback(err);
-      callback(null, body);
+      var parsed = JSON.parse(body);
+      options.callback(null, parsed);
     });
   }
 }
@@ -43,9 +47,10 @@ function post(options, callback) {
       content: options.content, // strings need to be encoded.
       onComplete: function onComplete(response) {
         if (response.statusText !== 'OK') {
-          callback([response.status, response.statusText]);
+          options.callback([response.status, response.statusText]);
         }
-        callback(null, response.text);
+        var parsed = JSON.parse(response.text);
+        options.callback(null, parsed);
       }
     });
     _req.post();
@@ -55,7 +60,8 @@ function post(options, callback) {
       form: options.content
     }, function (err, response, body) {
       if (err) callback(err);
-      callback(null, body);
+      var parsed = JSON.parse(body);
+      options.callback(null, parsed);
     });
   }
 }

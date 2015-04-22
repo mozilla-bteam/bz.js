@@ -15,9 +15,10 @@ export function get(options, callback) {
       contentType: contentType,
       onComplete: function (response) {
         if (response.statusText !== 'OK') {
-          callback([response.status, response.statusText]);
+          options.callback([response.status, response.statusText]);
         }
-        callback(null, response.text);
+        let parsed = JSON.parse(response.text);
+        options.callback(null, parsed);
       }
     });
     _req.get();
@@ -25,7 +26,8 @@ export function get(options, callback) {
   else {
     request.get(options.url, function(err, response, body) {
       if (err) callback(err);
-      callback(null, body);
+      let parsed = JSON.parse(body);
+      options.callback(null, parsed);
     });
   }
 }
@@ -37,9 +39,10 @@ export function post(options, callback) {
       content: options.content, // strings need to be encoded.
       onComplete: function (response) {
         if (response.statusText !== 'OK') {
-          callback([response.status, response.statusText]);
+          options.callback([response.status, response.statusText]);
         }
-        callback(null, response.text);
+        let parsed = JSON.parse(response.text);
+        options.callback(null, parsed);
       }
     });
     _req.post();
@@ -50,7 +53,8 @@ export function post(options, callback) {
       form: options.content
     }, function(err, response, body) {
       if (err) callback(err);
-      callback(null, body);
+      let parsed = JSON.parse(body);
+      options.callback(null, parsed);
     });
   }
 }
