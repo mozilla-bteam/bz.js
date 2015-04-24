@@ -7,11 +7,20 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+var hasXHR = !!XMLHttpRequest,
+    _loader = require;
 
-var _require = require('./xhr');
+if (!hasXHR) {
+  try {
+    var _loader2 = _loader('sdk/net/xhr');
 
-var get = _require.get;
-var post = _require.post;
+    var _XMLHttpRequest = _loader2.XMLHttpRequest;
+  } catch (e) {
+    var _loader3 = _loader('XMLHttpRequest');
+
+    var _XMLHttpRequest2 = _loader3.XMLHttpRequest;
+  }
+}
 
 /**
 Constant for the login entrypoint.
@@ -131,13 +140,13 @@ var BugzillaClient = (function () {
   }, {
     key: 'getBug',
     value: function getBug(id, params, callback) {
-      console.log('args', [].slice.call(arguments));
+      // console.log("args", [].slice.call(arguments));
       if (!callback) {
         callback = params;
         params = {};
       }
 
-      console.log(id, params, callback);
+      // console.log('getBug>', id, params, callback);
 
       this.APIRequest('/bug/' + id, 'GET', extractField(callback), 'bugs', null, params);
     }
@@ -260,24 +269,34 @@ var BugzillaClient = (function () {
         params.username = this.username;
         params.password = this.password;
       }
-      if (params) url += '?' + this.urlEncode(params);
+
+      if (params) {
+        url += '?' + this.urlEncode(params);
+      }
 
       body = JSON.stringify(body);
 
-      if (method === 'GET') {
-        get({
-          url: url,
-          callback: callback
-        });
-      } else if (method === 'POST') {
-        post({
-          url: url,
-          content: options.content,
-          callback: callback
-        });
-      } else {
-        throw 'Unsupported HTTP method passed: ' + method + ', this library currently supports POST and GET only.';
+      var that = this;
+
+      var req = new XMLHttpRequest();
+      req.open(method, url, true);
+      req.setRequestHeader('Accept', 'application/json');
+      if (method.toUpperCase() !== 'GET') {
+        req.setRequestHeader('Content-type', 'application/json');
       }
+      req.onreadystatechange = function (event) {
+        if (req.readyState == 4 && req.status != 0) {
+          that.handleResponse(null, req, callback, field);
+        }
+      };
+      req.timeout = this.timeout;
+      req.ontimeout = function (event) {
+        that.handleResponse('timeout', req, callback);
+      };
+      req.onerror = function (event) {
+        that.handleResponse('error', req, callback);
+      };
+      req.send(body);
     }
   }, {
     key: 'handleResponse',
@@ -339,8 +358,15 @@ var BugzillaClient = (function () {
 })();
 
 exports.BugzillaClient = BugzillaClient;
-exports.createClient = function (options) {
+var createClient = function createClient(options) {
   return new BugzillaClient(options);
 };
+
+exports.createClient = createClient;
+
+if (window) {
+  window.createClient = exports.createClient;
+}
+// console.log("exports>", exports);
 
 // note intentional use of != instead of !==

@@ -1,4 +1,12 @@
-let { get, post } = require('./xhr');
+let hasXHR = !!XMLHttpRequest, _loader = require;
+
+if (!hasXHR) {
+  try {
+    let { XMLHttpRequest } = _loader('sdk/net/xhr');
+  } catch(e) {
+    let { XMLHttpRequest } = _loader('XMLHttpRequest');
+  }
+}
 
 /**
 Constant for the login entrypoint.
@@ -116,13 +124,13 @@ export var BugzillaClient = class {
   }
 
   getBug (id, params, callback) {
-    console.log("args", [].slice.call(arguments));
+    // console.log("args", [].slice.call(arguments));
     if (!callback) {
        callback = params;
        params = {};
     }
 
-    console.log(id, params, callback);
+    // console.log('getBug>', id, params, callback);
 
     this.APIRequest(
       '/bug/' + id,
@@ -273,27 +281,34 @@ export var BugzillaClient = class {
       params.username = this.username;
       params.password = this.password;
     }
-    if(params)
+
+    if (params) {
       url += "?" + this.urlEncode(params);
+    }
 
     body = JSON.stringify(body);
 
-    if (method === 'GET') {
-      get({
-        url: url,
-        callback: callback
-      });
+    let that = this;
+
+    var req = new XMLHttpRequest();
+    req.open(method, url, true);
+    req.setRequestHeader("Accept", "application/json");
+    if (method.toUpperCase() !== "GET") {
+      req.setRequestHeader("Content-type", "application/json");
     }
-    else if (method === 'POST') {
-      post({
-        url: url,
-        content: options.content,
-        callback: callback
-      });
-    }
-    else {
-      throw "Unsupported HTTP method passed: " + method + ", this library currently supports POST and GET only."
-    }
+    req.onreadystatechange = function (event) {
+      if (req.readyState == 4 && req.status != 0) {
+        that.handleResponse(null, req, callback, field);
+      }
+    };
+    req.timeout = this.timeout;
+    req.ontimeout = function (event) {
+      that.handleResponse('timeout', req, callback);
+    };
+    req.onerror = function (event) {
+      that.handleResponse('error', req, callback);
+    };
+    req.send(body);
   }
 
   handleResponse (err, response, callback, field) {
@@ -357,6 +372,11 @@ export var BugzillaClient = class {
   }
 }
 
-exports.createClient = function(options) {
+let createClient = (options) => {
   return new BugzillaClient(options);
 }
+
+exports.createClient = createClient;
+
+if (window) { window.createClient = exports.createClient; }
+// console.log("exports>", exports);

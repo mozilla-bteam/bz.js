@@ -3,16 +3,29 @@
   "description": "Bugzilla REST API wrapper",
   "version": "0.3.0",
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "contributors": [{
-    "name": "Jeff Griffiths",
-    "email": "jeff@canuckistani.ca"
-  },
-    {"name": "James Lal"},
-    {"name": "Kevin Grandon"},
-    {"name": "Axel Hecht"},
-    {"name": "Josh Matthews"},
-    {"name": "Graeme McCutcheon"},
-    {"name": "Farrin Reid"}
+  "contributors": [
+    {
+      "name": "Jeff Griffiths",
+      "email": "jeff@canuckistani.ca"
+    },
+    {
+      "name": "James Lal"
+    },
+    {
+      "name": "Kevin Grandon"
+    },
+    {
+      "name": "Axel Hecht"
+    },
+    {
+      "name": "Josh Matthews"
+    },
+    {
+      "name": "Graeme McCutcheon"
+    },
+    {
+      "name": "Farrin Reid"
+    }
   ],
   "keywords": [
     "bugzilla"
@@ -23,7 +36,7 @@
   },
   "main": "./build/node/index",
   "dependencies": {
-    "request": "^2.55.0"
+    "xmlhttprequest": "^1.7.0"
   },
   "devDependencies": {
     "babel": "^5.1.9",

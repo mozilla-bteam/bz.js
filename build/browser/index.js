@@ -8,11 +8,20 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+var hasXHR = !!XMLHttpRequest,
+    _loader = require;
 
-var _require = require('./xhr');
+if (!hasXHR) {
+  try {
+    var _loader2 = _loader('sdk/net/xhr');
 
-var get = _require.get;
-var post = _require.post;
+    var _XMLHttpRequest = _loader2.XMLHttpRequest;
+  } catch (e) {
+    var _loader3 = _loader('XMLHttpRequest');
+
+    var _XMLHttpRequest2 = _loader3.XMLHttpRequest;
+  }
+}
 
 /**
 Constant for the login entrypoint.
@@ -132,13 +141,13 @@ var BugzillaClient = (function () {
   }, {
     key: 'getBug',
     value: function getBug(id, params, callback) {
-      console.log('args', [].slice.call(arguments));
+      // console.log("args", [].slice.call(arguments));
       if (!callback) {
         callback = params;
         params = {};
       }
 
-      console.log(id, params, callback);
+      // console.log('getBug>', id, params, callback);
 
       this.APIRequest('/bug/' + id, 'GET', extractField(callback), 'bugs', null, params);
     }
@@ -261,24 +270,34 @@ var BugzillaClient = (function () {
         params.username = this.username;
         params.password = this.password;
       }
-      if (params) url += '?' + this.urlEncode(params);
+
+      if (params) {
+        url += '?' + this.urlEncode(params);
+      }
 
       body = JSON.stringify(body);
 
-      if (method === 'GET') {
-        get({
-          url: url,
-          callback: callback
-        });
-      } else if (method === 'POST') {
-        post({
-          url: url,
-          content: options.content,
-          callback: callback
-        });
-      } else {
-        throw 'Unsupported HTTP method passed: ' + method + ', this library currently supports POST and GET only.';
+      var that = this;
+
+      var req = new XMLHttpRequest();
+      req.open(method, url, true);
+      req.setRequestHeader('Accept', 'application/json');
+      if (method.toUpperCase() !== 'GET') {
+        req.setRequestHeader('Content-type', 'application/json');
       }
+      req.onreadystatechange = function (event) {
+        if (req.readyState == 4 && req.status != 0) {
+          that.handleResponse(null, req, callback, field);
+        }
+      };
+      req.timeout = this.timeout;
+      req.ontimeout = function (event) {
+        that.handleResponse('timeout', req, callback);
+      };
+      req.onerror = function (event) {
+        that.handleResponse('error', req, callback);
+      };
+      req.send(body);
     }
   }, {
     key: 'handleResponse',
@@ -340,79 +359,17 @@ var BugzillaClient = (function () {
 })();
 
 exports.BugzillaClient = BugzillaClient;
-exports.createClient = function (options) {
+var createClient = function createClient(options) {
   return new BugzillaClient(options);
 };
 
+exports.createClient = createClient;
+
+if (window) {
+  window.createClient = exports.createClient;
+}
+// console.log("exports>", exports);
+
 // note intentional use of != instead of !==
-
-},{"./xhr":2}],2:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.get = get;
-exports.post = post;
-var request = undefined,
-    isJetpack = false,
-    _loader = require;
-
-try {
-  request = _loader('sdk/request');
-  isJetpack = true;
-} catch (err) {
-  request = _loader('request');
-}
-
-function get(options, callback) {
-  var contentType = options.contentType || 'application/json';
-  if (isJetpack) {
-    var _req = Request({
-      url: options.url,
-      contentType: contentType,
-      onComplete: function onComplete(response) {
-        if (response.statusText !== 'OK') {
-          options.callback([response.status, response.statusText]);
-        }
-        var parsed = JSON.parse(response.text);
-        options.callback(null, parsed);
-      }
-    });
-    _req.get();
-  } else {
-    request.get(options.url, function (err, response, body) {
-      if (err) callback(err);
-      var parsed = JSON.parse(body);
-      options.callback(null, parsed);
-    });
-  }
-}
-
-function post(options, callback) {
-  if (isJetpack) {
-    var _req = Request({
-      url: options.url,
-      content: options.content, // strings need to be encoded.
-      onComplete: function onComplete(response) {
-        if (response.statusText !== 'OK') {
-          options.callback([response.status, response.statusText]);
-        }
-        var parsed = JSON.parse(response.text);
-        options.callback(null, parsed);
-      }
-    });
-    _req.post();
-  } else {
-    request.post({
-      url: options.url,
-      form: options.content
-    }, function (err, response, body) {
-      if (err) callback(err);
-      var parsed = JSON.parse(body);
-      options.callback(null, parsed);
-    });
-  }
-}
 
 },{}]},{},[1])
