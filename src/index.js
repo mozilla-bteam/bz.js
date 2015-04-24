@@ -377,6 +377,11 @@ let createClient = (options) => {
 }
 
 exports.createClient = createClient;
+exports.BugzillaClient = BugzillaClient;
 
-if (window) { window.createClient = exports.createClient; }
-// console.log("exports>", exports);
+if (window) { 
+  window.bz = { 
+    createClient: exports.createClient,
+    BugzillaClient: BugzillaClient
+  }
+}

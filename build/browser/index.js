@@ -364,11 +364,14 @@ var createClient = function createClient(options) {
 };
 
 exports.createClient = createClient;
+exports.BugzillaClient = BugzillaClient;
 
 if (window) {
-  window.createClient = exports.createClient;
+  window.bz = {
+    createClient: exports.createClient,
+    BugzillaClient: BugzillaClient
+  };
 }
-// console.log("exports>", exports);
 
 // note intentional use of != instead of !==
 
