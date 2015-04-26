@@ -21,7 +21,7 @@ For the browser, download the lastest bz-<version>.js from the root directory.
 
 ## Builds
 
-1. `gulp` - this will build node and browser files from the ./src directory. The node main entry now points to 
+1. `gulp` - this will build node and browser files from the ./src directory. The node main entry now points to `./build/node/index`.
 
 ## Tests
 
