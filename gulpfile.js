@@ -30,5 +30,5 @@ gulp.task("default", ["browser", "node"], function() {
     // copy files
     console.log("copying files...");
     fs.createReadStream('./build/browser/bz.js').pipe(fs.createWriteStream('./test/browser/files/bz.js'));
-    // fs.createReadStream('./build/browser/bz.js').pipe(fs.createWriteStream('./bz-'+pkgInfo.version+'.js'));
+    fs.createReadStream('./build/browser/bz.js').pipe(fs.createWriteStream('./bz-'+pkgInfo.version+'.js'));
 });
