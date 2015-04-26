@@ -1,12 +1,4 @@
-let hasXHR = !!XMLHttpRequest, _loader = require;
-
-if (!hasXHR) {
-  try {
-    let { XMLHttpRequest } = _loader('sdk/net/xhr');
-  } catch(e) {
-    let { XMLHttpRequest } = _loader('XMLHttpRequest');
-  }
-}
+const XMLHttpRequest = require('./xhr').XMLHttpRequest;
 
 /**
 Constant for the login entrypoint.
@@ -248,7 +240,27 @@ export var BugzillaClient = class {
        callback = params;
        params = {};
     }
-    this.APIRequest('/configuration', 'GET', callback, null, null, params);
+
+    // this.APIRequest('/configuration', 'GET', callback, null, null, params);
+    // temp fix until /configuration is implemented, https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
+    let that = this;
+
+    var req = new XMLHttpRequest();
+    req.open('GET', 'https://api-dev.bugzilla.mozilla.org/latest/configuration', true);
+    req.setRequestHeader("Accept", "application/json");
+    req.onreadystatechange = function (event) {
+      if (req.readyState == 4 && req.status != 0) {
+        that.handleResponse(null, req, callback, field);
+      }
+    };
+    req.timeout = this.timeout;
+    req.ontimeout = function (event) {
+      that.handleResponse('timeout', req, callback);
+    };
+    req.onerror = function (event) {
+      that.handleResponse('error', req, callback);
+    };
+    req.send();
   }
 
   APIRequest (path, method, callback, field, body, params) {
@@ -306,14 +318,13 @@ export var BugzillaClient = class {
       that.handleResponse('timeout', req, callback);
     };
     req.onerror = function (event) {
-      that.handleResponse('error', req, callback);
+      that.handleResponse(event, req, callback);
     };
     req.send(body);
   }
 
   handleResponse (err, response, callback, field) {
     // detect timeout errors
-    console.log("response>", response);
     if (err && err.code && TIMEOUT_ERRORS.indexOf(err.code) !== -1) {
       return callback(new Error('timeout'));
     }
@@ -372,16 +383,14 @@ export var BugzillaClient = class {
   }
 }
 
-let createClient = (options) => {
+export function createClient(options) {
   return new BugzillaClient(options);
 }
 
-exports.createClient = createClient;
-exports.BugzillaClient = BugzillaClient;
-
-if (window) { 
-  window.bz = { 
-    createClient: exports.createClient,
-    BugzillaClient: BugzillaClient
-  }
+if (!module.parent && typeof window === 'undefined') {
+  let client = createClient();
+  client.getBug(6000, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+  })
 }

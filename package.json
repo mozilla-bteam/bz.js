@@ -1,7 +1,7 @@
 {
   "name": "bz",
   "description": "Bugzilla REST API wrapper",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "contributors": [
     {
@@ -47,6 +47,7 @@
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
     "mocha": "^2.2.4",
+    "serve-static": "^1.9.2",
     "vinyl-source-stream": "^1.1.0"
   }
 }

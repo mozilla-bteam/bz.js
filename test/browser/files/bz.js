@@ -1,3 +1,11 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// this file is the entrypoint for building a browser file with browserify
+
+"use strict";
+
+var bz = window.bz = require("./index");
+
+},{"./index":2}],2:[function(require,module,exports){
 'use strict';
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
@@ -379,3 +387,28 @@ if (!module.parent && typeof window === 'undefined') {
 }
 
 // note intentional use of != instead of !==
+
+},{"./xhr":3}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var XMLHttpRequest = null;
+
+exports.XMLHttpRequest = XMLHttpRequest;
+if (typeof window === 'undefined') {
+  // we're not in a browser?
+  var _loader = require;
+  try {
+    exports.XMLHttpRequest = XMLHttpRequest = _loader('sdk/net/xhr').XMLHttpRequest;
+  } catch (e) {
+    exports.XMLHttpRequest = XMLHttpRequest = _loader('xmlhttprequest').XMLHttpRequest;
+  }
+} else if (typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undefined') {
+  exports.XMLHttpRequest = XMLHttpRequest = window.XMLHttpRequest;
+} else {
+  throw 'No window, WAT.';
+}
+
+},{}]},{},[1])

@@ -28,7 +28,7 @@
     <script src="./index.js"></script>
     <script type="text/javascript">
 
-    var client = createClient();
+    var client = bz.createClient();
 
     client.searchBugs({whiteboard: '[devedition-40]'}, function(err, result) {
       if (err) {
@@ -39,7 +39,12 @@
         console.log(result);
         $('#output').html(JSON.stringify(result, null, '  '));
       }
-    })
+    });
+
+    client.getConfiguration(function(err, resp) {
+      if (err) throw err;
+      console.log("config>", resp);
+    });
     </script>
   </body>
 </html>

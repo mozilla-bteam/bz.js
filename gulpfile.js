@@ -5,22 +5,30 @@ var browserify = require("browserify");
 var babelify = require("babelify");
 var source = require('vinyl-source-stream');
 
+// metadata
+var pkgInfo = require('./package.json');
+
 gulp.task("browser", function() {
   browserify({ 
-    debug: true,
-    entries: './src/index.js'
+    debug: true
   })
   .transform(babelify)
+  .require('./src/bz.js', { entry: true })
   .bundle()
   .on("error", function (err) { console.log("Error: " + err.message); })
-  .pipe(source('index.js'))
+  .pipe(source('bz.js'))
   .pipe(gulp.dest('./build/browser'));
 });
 
 gulp.task("node", function () {
-  return gulp.src('./src/*.js')
+  return gulp.src(['./src/index.js', './src/xhr.js'])
     .pipe(babel())
     .pipe(gulp.dest("build/node"));
 });
 
-gulp.task("default", ["browser", "node"]);
+gulp.task("default", ["browser", "node"], function() {
+    // copy files
+    console.log("copying files...");
+    fs.createReadStream('./build/browser/bz.js').pipe(fs.createWriteStream('./test/browser/files/bz.js'));
+    // fs.createReadStream('./build/browser/bz.js').pipe(fs.createWriteStream('./bz-'+pkgInfo.version+'.js'));
+});

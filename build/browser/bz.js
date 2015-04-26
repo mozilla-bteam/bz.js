@@ -1,4 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// this file is the entrypoint for building a browser file with browserify
+
+"use strict";
+
+var bz = window.bz = require("./index");
+
+},{"./index":2}],2:[function(require,module,exports){
 'use strict';
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
@@ -8,20 +15,8 @@ var _createClass = (function () { function defineProperties(target, props) { for
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var hasXHR = !!XMLHttpRequest,
-    _loader = require;
-
-if (!hasXHR) {
-  try {
-    var _loader2 = _loader('sdk/net/xhr');
-
-    var _XMLHttpRequest = _loader2.XMLHttpRequest;
-  } catch (e) {
-    var _loader3 = _loader('XMLHttpRequest');
-
-    var _XMLHttpRequest2 = _loader3.XMLHttpRequest;
-  }
-}
+exports.createClient = createClient;
+var XMLHttpRequest = require('./xhr').XMLHttpRequest;
 
 /**
 Constant for the login entrypoint.
@@ -236,7 +231,27 @@ var BugzillaClient = (function () {
         callback = params;
         params = {};
       }
-      this.APIRequest('/configuration', 'GET', callback, null, null, params);
+
+      // this.APIRequest('/configuration', 'GET', callback, null, null, params);
+      // temp fix until /configuration is implemented, https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
+      var that = this;
+
+      var req = new XMLHttpRequest();
+      req.open('GET', 'https://api-dev.bugzilla.mozilla.org/latest/configuration', true);
+      req.setRequestHeader('Accept', 'application/json');
+      req.onreadystatechange = function (event) {
+        if (req.readyState == 4 && req.status != 0) {
+          that.handleResponse(null, req, callback, field);
+        }
+      };
+      req.timeout = this.timeout;
+      req.ontimeout = function (event) {
+        that.handleResponse('timeout', req, callback);
+      };
+      req.onerror = function (event) {
+        that.handleResponse('error', req, callback);
+      };
+      req.send();
     }
   }, {
     key: 'APIRequest',
@@ -295,7 +310,7 @@ var BugzillaClient = (function () {
         that.handleResponse('timeout', req, callback);
       };
       req.onerror = function (event) {
-        that.handleResponse('error', req, callback);
+        that.handleResponse(event, req, callback);
       };
       req.send(body);
     }
@@ -303,7 +318,6 @@ var BugzillaClient = (function () {
     key: 'handleResponse',
     value: function handleResponse(err, response, callback, field) {
       // detect timeout errors
-      console.log('response>', response);
       if (err && err.code && TIMEOUT_ERRORS.indexOf(err.code) !== -1) {
         return callback(new Error('timeout'));
       }
@@ -359,20 +373,42 @@ var BugzillaClient = (function () {
 })();
 
 exports.BugzillaClient = BugzillaClient;
-var createClient = function createClient(options) {
+
+function createClient(options) {
   return new BugzillaClient(options);
-};
+}
 
-exports.createClient = createClient;
-exports.BugzillaClient = BugzillaClient;
-
-if (window) {
-  window.bz = {
-    createClient: exports.createClient,
-    BugzillaClient: BugzillaClient
-  };
+if (!module.parent && typeof window === 'undefined') {
+  var client = createClient();
+  client.getBug(6000, function (err, result) {
+    if (err) throw err;
+    console.log(result);
+  });
 }
 
 // note intentional use of != instead of !==
+
+},{"./xhr":3}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var XMLHttpRequest = null;
+
+exports.XMLHttpRequest = XMLHttpRequest;
+if (typeof window === 'undefined') {
+  // we're not in a browser?
+  var _loader = require;
+  try {
+    exports.XMLHttpRequest = XMLHttpRequest = _loader('sdk/net/xhr').XMLHttpRequest;
+  } catch (e) {
+    exports.XMLHttpRequest = XMLHttpRequest = _loader('xmlhttprequest').XMLHttpRequest;
+  }
+} else if (typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undefined') {
+  exports.XMLHttpRequest = XMLHttpRequest = window.XMLHttpRequest;
+} else {
+  throw 'No window, WAT.';
+}
 
 },{}]},{},[1])
