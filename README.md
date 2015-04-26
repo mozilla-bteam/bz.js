@@ -1,8 +1,8 @@
-# bz.js
+# bz.js!
 
 A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
 
-# install
+# Install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
 
 ```
@@ -11,9 +11,23 @@ npm install bz
 
 and use with `var bz = require("bz")`
 
-For the browser, download the lastest bz-<version>.js from the root directory. Or build a browser file from the source code with `grunt build`.
+For the browser, download the lastest bz-<version>.js from the root directory. 
 
-# usage
+# Development
+
+1. git clone git@github.com:canuckistani/bz.js.git
+2. cd ./bz.js
+3. npm install
+
+## Builds
+
+1. `gulp` - this will build node and browser files from the ./src directory. The node main entry now points to 
+
+## Tests
+
+Some tests are included. If you want to run the browser tests you need to copy the file `config-test.json-sample` in the test/browser/files directory to a file called `config-test.json` in the same directory, then fill in the placeholders with your bugzilla credentials.
+
+# Usage
 
 ```javascript
 var bugzilla = bz.createClient();
@@ -31,7 +45,7 @@ creates a new Bugzilla API client, optionally takes options like the REST API ur
 
 ```javascript
 var bugzilla = bz.createClient({
-  url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
+  url: "https://api-dev.bugzilla.mozilla.org/rest/",
   username: 'bugs@bugmail.com',
   password: 'secret',
   timeout: 30000
