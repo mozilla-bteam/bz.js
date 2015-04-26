@@ -115,6 +115,11 @@ var BugzillaClient = (function () {
      @param {Function} callback [Error err, String token].
     */
     value: function login(callback) {
+
+      if (this._auth) {
+        callback(null, this._auth);
+      }
+
       if (!this.username || !this.password) {
         throw new Error('missing or invalid .username or .password');
       }
@@ -154,7 +159,13 @@ var BugzillaClient = (function () {
   }, {
     key: 'updateBug',
     value: function updateBug(id, bug, callback) {
-      this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
+      var _this = this;
+
+      this.login(function (err, response) {
+        if (err) throw err;
+        // console.log("updateBug>", response);
+        _this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
+      });
     }
   }, {
     key: 'createBug',
@@ -164,14 +175,20 @@ var BugzillaClient = (function () {
   }, {
     key: 'bugComments',
     value: function bugComments(id, callback) {
-      this.APIRequest('/bug/' + id + '/comment', 'GET', extractField(id, function (err, response) {
-        if (err) return callback(err);
-        callback(null, response.comments);
-      }), 'bugs');
+      var _this2 = this;
+
+      this.login(function (err, response) {
+        if (err) throw err;
+        _this2.APIRequest('/bug/' + id + '/comment', 'GET', extractField(id, function (err, response) {
+          if (err) return callback(err);
+          callback(null, response.comments);
+        }), 'bugs');
+      });
     }
   }, {
     key: 'addComment',
     value: function addComment(id, comment, callback) {
+
       this.APIRequest('/bug/' + id + '/comment', 'POST', callback, null, comment);
     }
   }, {
@@ -256,6 +273,7 @@ var BugzillaClient = (function () {
   }, {
     key: 'APIRequest',
     value: function APIRequest(path, method, callback, field, body, params) {
+      console.log('in api request>', path, this._auth);
       if (
       // if we are doing the login
       path === LOGIN ||
@@ -280,13 +298,16 @@ var BugzillaClient = (function () {
     value: function _APIRequest(path, method, callback, field, body, params) {
       var url = this.apiUrl + path;
 
-      if (this.username && this.password) {
-        params = params || {};
+      params = params || {};
+
+      if (this._auth) {
+        params.token = this._auth.token;
+      } else if (this.username && this.password) {
         params.username = this.username;
         params.password = this.password;
       }
 
-      if (params) {
+      if (params && Object.keys(params).length > 0) {
         url += '?' + this.urlEncode(params);
       }
 

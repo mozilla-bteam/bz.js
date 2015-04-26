@@ -97,6 +97,11 @@ export var BugzillaClient = class {
   @param {Function} callback [Error err, String token].
   */
   login (callback) {
+
+    if (this._auth) {
+      callback(null, this._auth);
+    }
+
     if (!this.username || !this.password) {
       throw new Error('missing or invalid .username or .password');
     }
@@ -139,7 +144,11 @@ export var BugzillaClient = class {
   }
 
   updateBug (id, bug, callback) {
-    this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
+    this.login ((err, response) => {
+      if (err) throw err;
+      // console.log("updateBug>", response);
+      this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
+    });
   }
 
   createBug (bug, callback) {
@@ -147,18 +156,23 @@ export var BugzillaClient = class {
   }
 
   bugComments (id, callback) {
-    this.APIRequest(
-      '/bug/' + id + '/comment',
-      'GET',
-      extractField(id, function(err, response) {
-        if (err) return callback(err);
-        callback(null, response.comments);
-      }),
-      'bugs'
-    );
+    this.login((err, response) => {
+      if (err) throw err;
+      this.APIRequest(
+        '/bug/' + id + '/comment',
+        'GET',
+        extractField(id, function(err, response) {
+          if (err) return callback(err);
+          callback(null, response.comments);
+        }),
+        'bugs'
+      );
+    });
   }
 
   addComment (id, comment, callback) {
+
+
     this.APIRequest(
       '/bug/' + id + '/comment',
       'POST',
@@ -264,6 +278,7 @@ export var BugzillaClient = class {
   }
 
   APIRequest (path, method, callback, field, body, params) {
+    console.log("in api request>", path, this._auth);
     if (
       // if we are doing the login
       path === LOGIN ||
@@ -288,13 +303,17 @@ export var BugzillaClient = class {
   _APIRequest (path, method, callback, field, body, params) {
     let url = this.apiUrl + path;
 
-    if(this.username && this.password) {
-      params = params || {};
+    params = params || {};
+
+    if (this._auth) {
+      params.token = this._auth.token;
+    }
+    else if (this.username && this.password) {
       params.username = this.username;
       params.password = this.password;
     }
 
-    if (params) {
+    if (params && Object.keys(params).length > 0) {
       url += "?" + this.urlEncode(params);
     }
 
