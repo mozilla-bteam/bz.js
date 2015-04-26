@@ -1,19 +1,20 @@
 $(document).ready(function() {
-  testBz();
+  $.getJSON('./test-config.json', function(result) {
+    console.log("result>", result);
+    testBz(result);
+  });
 });
 
-function testBz() {
-  var bugzilla = bz.createClient({
-    url: "https://api-dev.bugzilla.mozilla.org/test/0.9/",
-    username: "testbzapi@gmail.com",
-    password: "password"
-  });
+function testBz(testConfig) {
+  var bugzilla = bz.createClient(testConfig);
 
   bugzilla.getBug(6000, function(error, bug) {
-    if(error)
+    if(error) {
       $("#get-bug .fail").addClass("true");
-    else if(bug.id)
+      throw error;
+    } else if(bug.id) {
       $("#get-bug .pass").addClass("true");
+    }
   });
 
   bugzilla.getBug(9955, function(error, bug) {

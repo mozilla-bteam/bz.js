@@ -1,0 +1,5 @@
+{   
+  "url": "https://api-dev.bugzilla.mozilla.org/rest/",
+  "username": "FIXME@FOO.BAR",
+  "password": "PASSWORD123"
+}

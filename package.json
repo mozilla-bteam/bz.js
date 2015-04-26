@@ -1,22 +1,53 @@
 {
-    "name": "bz",
-    "description": "Bugzilla REST API wrapper",
-    "version": "0.3.0",
-    "author": "Heather Arthur <fayearthur@gmail.com>",
-    "keywords": ["bugzilla"],
-    "repository": {
-        "url": "http://github.com/harthur/bz.js.git",
-        "type": "git"
+  "name": "bz",
+  "description": "Bugzilla REST API wrapper",
+  "version": "0.0.4",
+  "author": "Heather Arthur <fayearthur@gmail.com>",
+  "contributors": [
+    {
+      "name": "Jeff Griffiths",
+      "email": "jeff@canuckistani.ca"
     },
-    "main": "./bz",
-    "dependencies": {
-        "request": "1.9.x"
+    {
+      "name": "James Lal"
     },
-    "devDependencies": {
-        "connect": "*",
-        "grunt": "~0.4.3",
-        "grunt-contrib-uglify": "~0.2.0",
-        "browserify": "~3.32.0"
+    {
+      "name": "Kevin Grandon"
     },
-    "id": "jid0-3MhY9xRVhRU80IsfUnZKLeIo5c0"
+    {
+      "name": "Axel Hecht"
+    },
+    {
+      "name": "Josh Matthews"
+    },
+    {
+      "name": "Graeme McCutcheon"
+    },
+    {
+      "name": "Farrin Reid"
+    }
+  ],
+  "keywords": [
+    "bugzilla"
+  ],
+  "repository": {
+    "url": "http://github.com/canuckistani/bz.js.git",
+    "type": "git"
+  },
+  "main": "./build/node/index",
+  "dependencies": {
+    "xmlhttprequest": "^1.7.0"
+  },
+  "devDependencies": {
+    "babel": "^5.1.9",
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
+    "chai": "^2.2.0",
+    "connect": "^3.3.5",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "mocha": "^2.2.4",
+    "serve-static": "^1.9.2",
+    "vinyl-source-stream": "^1.1.0"
+  }
 }
