@@ -250,7 +250,7 @@ var BugzillaClient = (function () {
       req.setRequestHeader('Accept', 'application/json');
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
-          that.handleResponse(null, req, callback, field);
+          that.handleResponse(null, req, callback, null);
         }
       };
       req.timeout = this.timeout;
@@ -265,7 +265,7 @@ var BugzillaClient = (function () {
   }, {
     key: 'APIRequest',
     value: function APIRequest(path, method, callback, field, body, params) {
-      console.log('in api request>', path, this._auth);
+      // console.log("in api request>", path, this._auth);
       if (
       // if we are doing the login
       path === LOGIN ||
@@ -389,14 +389,6 @@ exports.BugzillaClient = BugzillaClient;
 
 function createClient(options) {
   return new BugzillaClient(options);
-}
-
-if (!module.parent && typeof window === 'undefined') {
-  var client = createClient();
-  client.getBug(6000, function (err, result) {
-    if (err) throw err;
-    console.log(result);
-  });
 }
 
 // note intentional use of != instead of !==

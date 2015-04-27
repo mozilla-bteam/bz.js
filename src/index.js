@@ -264,7 +264,7 @@ export var BugzillaClient = class {
     req.setRequestHeader("Accept", "application/json");
     req.onreadystatechange = function (event) {
       if (req.readyState == 4 && req.status != 0) {
-        that.handleResponse(null, req, callback, field);
+        that.handleResponse(null, req, callback);
       }
     };
     req.timeout = this.timeout;
@@ -278,7 +278,7 @@ export var BugzillaClient = class {
   }
 
   APIRequest (path, method, callback, field, body, params) {
-    console.log("in api request>", path, this._auth);
+    // console.log("in api request>", path, this._auth);
     if (
       // if we are doing the login
       path === LOGIN ||
@@ -404,12 +404,4 @@ export var BugzillaClient = class {
 
 export function createClient(options) {
   return new BugzillaClient(options);
-}
-
-if (!module.parent && typeof window === 'undefined') {
-  let client = createClient();
-  client.getBug(6000, (err, result) => {
-    if (err) throw err;
-    console.log(result);
-  })
 }
