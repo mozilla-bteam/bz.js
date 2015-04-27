@@ -258,7 +258,7 @@ var BugzillaClient = (function () {
       req.setRequestHeader('Accept', 'application/json');
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
-          that.handleResponse(null, req, callback, null);
+          that.handleResponse(null, req, callback);
         }
       };
       req.timeout = this.timeout;

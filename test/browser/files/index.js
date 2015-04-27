@@ -17,18 +17,18 @@ function testBz(testConfig) {
     }
   });
 
-  // bugzilla.getBug(9955, function(error, bug) {
-  //   bug = {
-  //      update_token: bug.update_token,
-  //      summary: 'new summary'
-  //   }
-  //   bugzilla.updateBug(9955, bug, function(error, ok) {
-  //     if(error)
-  //       $("#update-bug .fail").addClass("true");
-  //     else if(ok)
-  //       $("#update-bug .pass").addClass("true");
-  //   });
-  // });
+  bugzilla.getBug(9955, function(error, bug) {
+    bug = {
+       update_token: bug.update_token,
+       summary: 'new summary'
+    }
+    bugzilla.updateBug(9955, bug, function(error, ok) {
+      if(error)
+        $("#update-bug .fail").addClass("true");
+      else if(ok)
+        $("#update-bug .pass").addClass("true");
+    });
+  });
 
   var _bug = {
     "summary": "test bug",
@@ -63,4 +63,8 @@ function testBz(testConfig) {
         $("#add-comment .pass").addClass("true");
     }
   );
+
+  bugzilla.getConfiguration(function() {
+    
+  });
 };
