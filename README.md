@@ -1,6 +1,10 @@
-# bz.js!
+# bz.js! [![Build Status](https://travis-ci.org/canuckistani/bz.js.png)](https://travis-ci.org/canuckistani/bz.js)
 
 A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
+
+#Warning!!!
+
+Although Travis tests are now working, test coverage is far from complete. Please [report issues](https://github.com/canuckistani/bz.js/issues) especially if you find problems running bz.js in the browser. Worst case scenario, please revert to [0.3](https://github.com/canuckistani/bz.js/tree/0.3x) as it still basically works.
 
 # Install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
@@ -62,7 +66,7 @@ retrieves a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) given 
 searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and fetches an array of [bugs](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug).
 
 `countBugs(searchParams, callback)`  
-searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and gets a integer count of bugs matching that query.
+<del>searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and gets a integer count of bugs matching that query.</del> this is not supported currently.
 
 `createBug(bug, callback)`  
 creates a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) and returns the id of the newly created bug.
@@ -104,5 +108,5 @@ retrieves a [user](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#User) give
 retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAPI:Objects#Suggested_Reviewer) for a bug.
 
 `getConfiguration(options, callback)`  
-gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server.
+gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server. Note: this only works currently against Mozilla's production instance, the bugzilla 5.0 instance running on landfill has no equivalent call that can be run from the browser due to a lack of CORS headers.
 
