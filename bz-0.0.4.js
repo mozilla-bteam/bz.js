@@ -40,6 +40,7 @@ function extractField(id, callback) {
     // default behavior is to use the first id when the caller does not provide
     // one.
     if (id === undefined) {
+      debugger;
       id = Object.keys(response)[0];
     }
 
@@ -132,7 +133,11 @@ var BugzillaClient = (function () {
       var handleLogin = (function handleLogin(err, response) {
         if (err) {
           return callback(err);
-        }this._auth = response;
+        }if (response.result) {
+          this._auth = response.result;
+        } else {
+          this._auth = response;
+        }
         callback(null, response);
       }).bind(this);
 
@@ -243,6 +248,12 @@ var BugzillaClient = (function () {
     }
   }, {
     key: 'getConfiguration',
+
+    /* 
+      XXX this call is provided for convenience to people scripting against prod bugzillq 
+      THERE IS NO EQUIVALENT REST CALL IN TIP, so this should not be tested against tip, hence
+      the hard-coded url.
+    */
     value: function getConfiguration(params, callback) {
       if (!callback) {
         callback = params;
@@ -250,7 +261,8 @@ var BugzillaClient = (function () {
       }
 
       // this.APIRequest('/configuration', 'GET', callback, null, null, params);
-      // temp fix until /configuration is implemented, https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
+      // UGLAY temp fix until /configuration is implemented,
+      // see https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
       var that = this;
 
       var req = new XMLHttpRequest();
@@ -258,7 +270,7 @@ var BugzillaClient = (function () {
       req.setRequestHeader('Accept', 'application/json');
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
-          that.handleResponse(null, req, callback, null);
+          that.handleResponse(null, req, callback);
         }
       };
       req.timeout = this.timeout;
@@ -361,6 +373,11 @@ var BugzillaClient = (function () {
         }
       }
 
+      // detect if we're running Bugzilla 5.0
+      if (typeof parsedBody.result !== 'undefined') {
+        parsedBody = parsedBody.result;
+      }
+
       // successful http respnse but an error
       // XXX: this seems like a bug in the api.
       if (parsedBody && parsedBody.error) {
@@ -371,7 +388,6 @@ var BugzillaClient = (function () {
         return callback(new Error('HTTP status ' + response.status + '\n' + (parsedBody && parsedBody.message) ? parsedBody.message : ''));
       }
 
-      // console.log('raw json', parsedBody);
       callback(null, field ? parsedBody[field] : parsedBody);
     }
   }, {

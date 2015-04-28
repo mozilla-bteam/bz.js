@@ -37,13 +37,15 @@ function extractField(id, callback) {
   return function (err, response) {
     if (err) return callback(err);
 
-    // default behavior is to use the first id when the caller does not provide
-    // one.
-    if (id === undefined) {
-      id = Object.keys(response)[0];
+    if (response) {
+      // default behavior is to use the first id when the caller does not provide one.
+      if (id === undefined) {
+        id = Object.keys(response)[0];
+      }
+      callback(null, response[id]);
+    } else {
+      throw 'Error:, no response in extractField';
     }
-
-    callback(null, response[id]);
   };
 }
 
@@ -132,7 +134,11 @@ var BugzillaClient = (function () {
       var handleLogin = (function handleLogin(err, response) {
         if (err) {
           return callback(err);
-        }this._auth = response;
+        }if (response.result) {
+          this._auth = response.result;
+        } else {
+          this._auth = response;
+        }
         callback(null, response);
       }).bind(this);
 
@@ -175,20 +181,21 @@ var BugzillaClient = (function () {
   }, {
     key: 'bugComments',
     value: function bugComments(id, callback) {
-      var _this2 = this;
+      var _callback = function _callback(e, r) {
+        if (e) throw e;
+        var _bug_comments = r[id];
+        if (typeof _bug_comments.comments !== 'undefined') {
+          // bugzilla 5 :(
+          _bug_comments = _bug_comments.comments;
+        }
+        callback(null, _bug_comments);
+      };
 
-      this.login(function (err, response) {
-        if (err) throw err;
-        _this2.APIRequest('/bug/' + id + '/comment', 'GET', extractField(id, function (err, response) {
-          if (err) return callback(err);
-          callback(null, response.comments);
-        }), 'bugs');
-      });
+      this.APIRequest('/bug/' + id + '/comment', 'GET', _callback, 'bugs');
     }
   }, {
     key: 'addComment',
     value: function addComment(id, comment, callback) {
-
       this.APIRequest('/bug/' + id + '/comment', 'POST', callback, null, comment);
     }
   }, {
@@ -212,7 +219,7 @@ var BugzillaClient = (function () {
   }, {
     key: 'createAttachment',
     value: function createAttachment(id, attachment, callback) {
-      this.APIRequest('/bug/' + id + '/attachment', 'POST', extractField(callback), 'attachments', attachment);
+      this.APIRequest('/bug/' + id + '/attachment', 'POST', extractField(callback), 'ids', attachment);
     }
   }, {
     key: 'getAttachment',
@@ -243,6 +250,12 @@ var BugzillaClient = (function () {
     }
   }, {
     key: 'getConfiguration',
+
+    /* 
+      XXX this call is provided for convenience to people scripting against prod bugzillq 
+      THERE IS NO EQUIVALENT REST CALL IN TIP, so this should not be tested against tip, hence
+      the hard-coded url.
+    */
     value: function getConfiguration(params, callback) {
       if (!callback) {
         callback = params;
@@ -250,7 +263,8 @@ var BugzillaClient = (function () {
       }
 
       // this.APIRequest('/configuration', 'GET', callback, null, null, params);
-      // temp fix until /configuration is implemented, https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
+      // UGLAY temp fix until /configuration is implemented,
+      // see https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
       var that = this;
 
       var req = new XMLHttpRequest();
@@ -273,7 +287,6 @@ var BugzillaClient = (function () {
   }, {
     key: 'APIRequest',
     value: function APIRequest(path, method, callback, field, body, params) {
-      // console.log("in api request>", path, this._auth);
       if (
       // if we are doing the login
       path === LOGIN ||
@@ -319,7 +332,7 @@ var BugzillaClient = (function () {
       req.open(method, url, true);
       req.setRequestHeader('Accept', 'application/json');
       if (method.toUpperCase() !== 'GET') {
-        req.setRequestHeader('Content-type', 'application/json');
+        req.setRequestHeader('Content-Type', 'application/json');
       }
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
@@ -361,6 +374,11 @@ var BugzillaClient = (function () {
         }
       }
 
+      // detect if we're running Bugzilla 5.0
+      if (typeof parsedBody.result !== 'undefined') {
+        parsedBody = parsedBody.result;
+      }
+
       // successful http respnse but an error
       // XXX: this seems like a bug in the api.
       if (parsedBody && parsedBody.error) {
@@ -371,7 +389,6 @@ var BugzillaClient = (function () {
         return callback(new Error('HTTP status ' + response.status + '\n' + (parsedBody && parsedBody.message) ? parsedBody.message : ''));
       }
 
-      // console.log('raw json', parsedBody);
       callback(null, field ? parsedBody[field] : parsedBody);
     }
   }, {
