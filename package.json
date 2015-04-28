@@ -3,6 +3,9 @@
   "description": "Bugzilla REST API wrapper",
   "version": "0.0.4",
   "author": "Heather Arthur <fayearthur@gmail.com>",
+  "scripts": {
+    "test": "mocha -t 8000"
+  },
   "contributors": [
     {
       "name": "Jeff Griffiths",
