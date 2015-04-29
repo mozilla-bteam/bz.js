@@ -5,7 +5,9 @@ var authConfig = require('./test/browser/files/test-config.json');
 
 console.log("authConfig", authConfig);
 
-var bugzilla = bz.createClient(authConfig);
+var bugzilla = bz.createClient(); // PROD
+
+// var bugzilla = bz.createClient(authConfig);
 
 // client.login(function (err, response) {
 //   console.log("this", this);
@@ -65,6 +67,14 @@ var assert = {
 //   if (err) throw err;
 //   assert.ok(bug.summary);
 // });
+
+// private bug, should fail
+bugzilla.getBug(767101, function(err, bug) {
+  if (err) throw err;
+  console.log("bug>", bug);
+  // if (err) throw err;
+  // assert.ok(bug.summary);
+});
 
 // bugzilla.bugHistory(9955, function(err, bugs) {
 //   if (err) throw err;
@@ -147,7 +157,7 @@ var assert = {
 //   assert.ok(attachments);
 // });
 
-bugzilla.bugComments(6000, function(err, comments) {
-  if (err) throw err;
-  console.log("comments.length>", comments.length);
-});
+// bugzilla.bugComments(6000, function(err, comments) {
+//   if (err) throw err;
+//   console.log("comments.length>", comments.length);
+// });
