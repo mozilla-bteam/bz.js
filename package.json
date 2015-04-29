@@ -1,7 +1,7 @@
 {
   "name": "bz",
   "description": "Bugzilla REST API wrapper",
-  "version": "0.0.4",
+  "version": "0.4.0",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "scripts": {
     "test": "mocha -t 8000"
