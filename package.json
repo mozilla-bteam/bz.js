@@ -39,6 +39,7 @@
   },
   "main": "./build/node/index",
   "dependencies": {
+    "engine-details": "0.0.4",
     "xmlhttprequest": "^1.7.0"
   },
   "devDependencies": {
@@ -50,6 +51,9 @@
     "connect": "^3.3.5",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
+    "gulp-plumber": "^1.0.0",
+    "gulp-print": "^1.1.0",
+    "gulp-watch": "^4.2.4",
     "magic-constants": "0.0.1",
     "mocha": "^2.2.4",
     "serve-static": "^1.9.2",

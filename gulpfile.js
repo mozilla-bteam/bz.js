@@ -26,6 +26,10 @@ gulp.task("node", function () {
     .pipe(gulp.dest("build/node"));
 });
 
+gulp.task("watch", function() {
+  return gulp.watch('./src/*.js', ['default']);
+});
+
 gulp.task("default", ["browser", "node"], function() {
     // copy files
     console.log("copying files...");
