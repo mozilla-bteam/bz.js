@@ -12,10 +12,10 @@ if (typeof window === 'undefined') {
   try {
     exports.XMLHttpRequest = XMLHttpRequest = _loader('sdk/net/xhr').XMLHttpRequest;
   } catch (e) {
-    exports.XMLHttpRequest = XMLHttpRequest = _loader('xmlhttprequest').XMLHttpRequest;
+    exports.XMLHttpRequest = XMLHttpRequest = _loader("xmlhttprequest").XMLHttpRequest;
   }
 } else if (typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undefined') {
   exports.XMLHttpRequest = XMLHttpRequest = window.XMLHttpRequest;
 } else {
-  throw 'No window, WAT.';
+  throw "No window, WAT.";
 }

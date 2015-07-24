@@ -32,7 +32,7 @@ describe('bz.js basic bug wrangling', function() {
     bugzilla.searchBugs({
         summary: "window",
         summary_type: "contains_all_words"
-      }, 
+      },
       function(err, bugs) {
         if (err) throw err;
         assert.ok(bugs.length);
@@ -44,38 +44,36 @@ describe('bz.js basic bug wrangling', function() {
   // XXX this doesn't work, probably a bug in bugzilla. error is related
   // XXX to op_sys field:
   // XXX "Uncaught Error: You must select/enter a OS."
-  // it('tests creating a bug from scratch', function(done) {
-  //   bugzilla.createBug({
-  //       product: "Firefox",
-  //       component: "Developer Tools",
-  //       summary: "it's broken",
-  //       version: "Trunk",
-  //       platform: "All",
-  //       op_sys: "All"
-  //     },
-  //     function(err, id) {
-  //       if (err) throw err;
-  //       assert.equal(typeof id, "number");
-  //       done();
-  //     }
-  //   );
-  // });
+  it('tests creating a bug from scratch', function(done) {
+    var _tpl = {
+      product: 'FoodReplicator',
+      component: 'SaltSprinkler',
+      summary: 'Test whiteboard bug',
+      whiteboard: '[devedition-40]',
+      op_sys: 'Linux',
+      platform: 'PC',
+      version: '1.0'
+    };
+    bugzilla.createBug(_tpl,
+      function(err, id) {
+        if (err) throw err;
+        assert.equal(typeof id, "number");
+        done();
+      }
+    );
+  });
 
   // XXX this test needs to create a bug in order to update it.
-  // it('tests updating a bug with a new summary', function(done) {
-  //   bugzilla.getBug(9955, function(err, bug) {
-  //     if (err) throw err;
-  //     bug = {
-  //        update_token: bug.update_token,
-  //        summary: 'new summary'
-  //     }
-  //     bugzilla.updateBug(9955, bug, function(err, ok) {
-  //       if (err) throw err;
-  //       assert.ok(ok);
-  //       done();
-  //     });
-  //   });
-  // });
+  it('tests updating a bug with a new whiteboard', function(done) {
+    bug = {
+       whiteboard: '[test-whiteboard]'
+    }
+    bugzilla.updateBug(9955, bug, function(err, ok) {
+      if (err) throw err;
+      assert.ok(ok);
+      done();
+    });
+  });
 
   it('tests getting bug comments', function(done) {
     bugzilla.bugComments(6000, function(err, comments) {
