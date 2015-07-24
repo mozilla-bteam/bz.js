@@ -88,10 +88,10 @@ export var BugzillaClient = class {
 
   @type {Object}
   */
-  
+
 
   /**
-  In the REST API we first login to acquire a token which is then used to make 
+  In the REST API we first login to acquire a token which is then used to make
   requests. See: http://bzr.mozilla.org/bmo/4.2/view/head:/Bugzilla/WebService/Server/REST.pm#L556
 
   This method can be used publicly but is designed for internal consumption for
@@ -120,7 +120,7 @@ export var BugzillaClient = class {
         this._auth = response.result
       }
       else {
-        this._auth = response;  
+        this._auth = response;
       }
       callback(null, response);
     }.bind(this);
@@ -129,13 +129,10 @@ export var BugzillaClient = class {
   }
 
   getBug (id, params, callback) {
-    // console.log("args", [].slice.call(arguments));
     if (!callback) {
        callback = params;
        params = {};
     }
-
-    // console.log('getBug>', id, params, callback);
 
     this.APIRequest(
       '/bug/' + id,
@@ -152,11 +149,7 @@ export var BugzillaClient = class {
   }
 
   updateBug (id, bug, callback) {
-    this.login ((err, response) => {
-      if (err) throw err;
-      // console.log("updateBug>", response);
-      this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
-    });
+    this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
   }
 
   createBug (bug, callback) {
@@ -180,7 +173,6 @@ export var BugzillaClient = class {
       _callback,
       'bugs'
     );
-
   }
 
   addComment (id, comment, callback) {
@@ -260,8 +252,8 @@ export var BugzillaClient = class {
     this.APIRequest('/review/suggestions/' + id, 'GET', callback);
   }
 
-  /* 
-    XXX this call is provided for convenience to people scripting against prod bugzillq 
+  /*
+    XXX this call is provided for convenience to people scripting against prod bugzillq
     THERE IS NO EQUIVALENT REST CALL IN TIP, so this should not be tested against tip, hence
     the hard-coded url.
   */
@@ -272,7 +264,7 @@ export var BugzillaClient = class {
     }
 
     // this.APIRequest('/configuration', 'GET', callback, null, null, params);
-    // UGLAY temp fix until /configuration is implemented, 
+    // UGLAY temp fix until /configuration is implemented,
     // see https://bugzilla.mozilla.org/show_bug.cgi?id=924405#c11:
     let that = this;
 
