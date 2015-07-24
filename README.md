@@ -1,12 +1,14 @@
-# bz.js! [![Build Status](https://travis-ci.org/canuckistani/bz.js.png)](https://travis-ci.org/canuckistani/bz.js)
+# bz.js! 
 
-A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API).
+### [![Build Status](https://travis-ci.org/canuckistani/bz.js.png)](https://travis-ci.org/canuckistani/bz.js)
 
-#Warning!!!
+*A JavaScript wrapper for the [Bugzilla REST API](https://wiki.mozilla.org/Bugzilla:REST_API)*.
+
+## Warning!!!
 
 Although Travis tests are now working, test coverage is far from complete. Please [report issues](https://github.com/canuckistani/bz.js/issues) especially if you find problems running bz.js in the browser. Worst case scenario, please revert to [0.3](https://github.com/canuckistani/bz.js/tree/0.3x) as it still basically works.
 
-# Install
+## Install
 For [node](http://nodejs.org) install with [npm](http://npmjs.org):
 
 ```
@@ -17,21 +19,21 @@ and use with `var bz = require("bz")`
 
 For the browser, download the lastest bz-<version>.js from the root directory. 
 
-# Development
+## Development
 
 1. git clone git@github.com:canuckistani/bz.js.git
 2. cd ./bz.js
 3. npm install
 
-## Builds
+### Builds
 
 1. `gulp` - this will build node and browser files from the ./src directory. The node main entry now points to `./build/node/index`.
 
-## Tests
+### Tests
 
 Some tests are included. If you want to run the browser tests you need to copy the file `config-test.json-sample` in the test/browser/files directory to a file called `config-test.json` in the same directory, then fill in the placeholders with your bugzilla credentials.
 
-# Usage
+## Usage
 
 ```javascript
 var bugzilla = bz.createClient();
