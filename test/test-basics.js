@@ -192,3 +192,22 @@ describe('tests attachments', function() {
     });
   });
 });
+
+describe('test using an api_key', function() {
+  var bugzilla;
+  before(function() {
+    bugzilla = bz.createClient({
+      api_key: 'zWHkdtvzAwoG2AfQMcTfyJdIWRUPVyJzgszM3g1Z',
+      "url": "https://landfill.bugzilla.org/bugzilla-tip/rest/",
+    });
+  });
+
+  it('tests changing a bug using only an api_key', function(done) {
+    bugzilla.updateBug('27114', {url: 'https://landfill.bugzilla.org/bugzilla-tip/show_bug.cgi?id=27114'}, function(err, result) {
+      if (err) throw err;
+      assert.ok(true);
+      done();
+    });
+
+  });
+});
