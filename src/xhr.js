@@ -1,5 +1,4 @@
 export var XMLHttpRequest = null;
-import is from 'engine-details';
 
 if (typeof window === 'undefined') {
   // we're not in a browser?
@@ -16,4 +15,3 @@ else if(typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undef
 else {
   throw "No window, WAT."
 }
-
