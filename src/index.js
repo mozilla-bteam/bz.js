@@ -300,6 +300,8 @@ export var BugzillaClient = class {
       return this._APIRequest.apply(this, arguments);
     }
 
+    let args = [].slice.call(arguments);
+
     this.login(function(err) {
       if (err) return callback(err);
       this._APIRequest.apply(this, args);
