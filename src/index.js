@@ -69,6 +69,7 @@ export var BugzillaClient = class {
     this.username = options.username;
     this.password = options.password;
     this.timeout = options.timeout || 0;
+    this.api_key = options.api_key || null;
 
     if (options.test) {
       throw new Error('options.test is deprecated please specify the url directly');
@@ -299,9 +300,6 @@ export var BugzillaClient = class {
       return this._APIRequest.apply(this, arguments);
     }
 
-    // so we can pass the arguments inside of another function
-    let args = [].slice.call(arguments);
-
     this.login(function(err) {
       if (err) return callback(err);
       this._APIRequest.apply(this, args);
@@ -312,6 +310,8 @@ export var BugzillaClient = class {
     let url = this.apiUrl + path;
 
     params = params || {};
+
+    if(this.api_key) { params.api_key = this.api_key; }
 
     if (this._auth) {
       params.token = this._auth.token;
