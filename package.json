@@ -1,7 +1,7 @@
 {
   "name": "bz",
   "description": "Bugzilla REST API wrapper",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "scripts": {
     "test": "mocha -t 8000"
@@ -39,7 +39,6 @@
   },
   "main": "./build/node/index",
   "dependencies": {
-    "engine-details": "0.0.4",
     "xmlhttprequest": "^1.7.0"
   },
   "devDependencies": {
