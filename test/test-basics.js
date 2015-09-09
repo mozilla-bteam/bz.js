@@ -208,6 +208,5 @@ describe('test using an api_key', function() {
       assert.ok(true);
       done();
     });
-
   });
 });
