@@ -303,7 +303,7 @@ var BugzillaClient = (function () {
       if (this._auth) {
         params.token = this._auth.token;
       } else if (this.username && this.password) {
-        params.username = this.username;
+        params.login = this.username;
         params.password = this.password;
       }
 
