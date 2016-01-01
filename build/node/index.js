@@ -1,5 +1,5 @@
 'use strict';
-
+var Q = require('q');
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -269,6 +269,36 @@ var BugzillaClient = (function () {
       req.send();
     }
   }, {
+    key: 'getProducts',
+    value: function (product) {
+      return Q.Promise(function(resolve) {
+        if( product in ["selectable", "enterable", "accessible"] ) {
+          this.APIRequest(
+            '/rest/product?type=' + product,
+            'GET',
+            resolve
+          );
+        } else {
+          this.APIRequest(
+            '/rest/product/' + product,
+            'GET',
+            resolve
+          );
+        }
+      });
+    }
+  }, {
+    key: 'getProduct',
+    value: function (product) {
+      return Q.Promise(function(resolve) {
+        this.APIRequest(
+          '/rest/product/' + product,
+          'GET',
+          resolve
+        );
+      });
+    }
+  }, {
     key: 'APIRequest',
     value: function APIRequest(path, method, callback, field, body, params) {
       if (
@@ -322,15 +352,18 @@ var BugzillaClient = (function () {
         req.setRequestHeader('Content-Type', 'application/json');
       }
       req.onreadystatechange = function (event) {
+        console.log("state changing %d %d", req.readyState, req.status);
         if (req.readyState == 4 && req.status != 0) {
           that.handleResponse(null, req, callback, field);
         }
       };
       req.timeout = this.timeout;
       req.ontimeout = function (event) {
+        console.log("timeout");
         that.handleResponse('timeout', req, callback);
       };
       req.onerror = function (event) {
+        console.log("error %j", event);
         that.handleResponse(event, req, callback);
       };
       req.send(body);
