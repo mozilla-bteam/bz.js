@@ -271,18 +271,31 @@ var BugzillaClient = (function () {
   }, {
     key: 'getProducts',
     value: function (product) {
+      var _this = this;
       return Q.Promise(function(resolve) {
-        if( product in ["selectable", "enterable", "accessible"] ) {
-          this.APIRequest(
-            '/rest/product?type=' + product,
+        if( product === "selectable" || product === "enterable" || product === "accessible" ) {
+          _this.APIRequest(
+            '/product?type=' + product,
             'GET',
-            resolve
+            function(err, products) {
+              if(err) {
+                return reject(err);
+              } else {
+                return resolve(products);
+              }
+            }
           );
         } else {
-          this.APIRequest(
-            '/rest/product/' + product,
+          _this.APIRequest(
+            '/product/' + product,
             'GET',
-            resolve
+            function(err, products) {
+              if(err) {
+                return reject(err);
+              } else {
+                return resolve(products);
+              }
+            }
           );
         }
       });
@@ -290,11 +303,18 @@ var BugzillaClient = (function () {
   }, {
     key: 'getProduct',
     value: function (product) {
+      var _this = this;
       return Q.Promise(function(resolve) {
-        this.APIRequest(
-          '/rest/product/' + product,
+        _this.APIRequest(
+          '/product/' + product,
           'GET',
-          resolve
+          function(err, product) {
+              if(err) {
+                return reject(err);
+              } else {
+                return resolve(product);
+              }
+            }
         );
       });
     }
@@ -338,7 +358,11 @@ var BugzillaClient = (function () {
       }
 
       if (params && Object.keys(params).length > 0) {
-        url += '?' + this.urlEncode(params);
+        if( url.match(/\?/) ) {
+          url += '&' + this.urlEncode(params);
+        } else {
+          url += '?' + this.urlEncode(params);
+        }
       }
 
       body = JSON.stringify(body);
@@ -352,18 +376,15 @@ var BugzillaClient = (function () {
         req.setRequestHeader('Content-Type', 'application/json');
       }
       req.onreadystatechange = function (event) {
-        console.log("state changing %d %d", req.readyState, req.status);
         if (req.readyState == 4 && req.status != 0) {
           that.handleResponse(null, req, callback, field);
         }
       };
       req.timeout = this.timeout;
       req.ontimeout = function (event) {
-        console.log("timeout");
         that.handleResponse('timeout', req, callback);
       };
       req.onerror = function (event) {
-        console.log("error %j", event);
         that.handleResponse(event, req, callback);
       };
       req.send(body);
@@ -384,7 +405,6 @@ var BugzillaClient = (function () {
 
       // even in the case of an unsuccessful request we may have json data.
       var parsedBody;
-
       try {
         parsedBody = JSON.parse(response.responseText);
       } catch (e) {
