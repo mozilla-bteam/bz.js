@@ -28,6 +28,10 @@
     },
     {
       "name": "Farrin Reid"
+    },
+    {
+      "name": "John Davis",
+      "email": "aumkara@gmail.com"
     }
   ],
   "keywords": [
@@ -39,6 +43,7 @@
   },
   "main": "./build/node/index",
   "dependencies": {
+    "q": "^1.4.1",
     "xmlhttprequest": "^1.7.0"
   },
   "devDependencies": {

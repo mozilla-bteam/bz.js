@@ -1,5 +1,5 @@
 'use strict';
-
+var Q = require('q');
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -269,6 +269,56 @@ var BugzillaClient = (function () {
       req.send();
     }
   }, {
+    key: 'getProducts',
+    value: function (product) {
+      var _this = this;
+      return Q.Promise(function(resolve) {
+        if( product === "selectable" || product === "enterable" || product === "accessible" ) {
+          _this.APIRequest(
+            '/product?type=' + product,
+            'GET',
+            function(err, products) {
+              if(err) {
+                return reject(err);
+              } else {
+                return resolve(products);
+              }
+            }
+          );
+        } else {
+          _this.APIRequest(
+            '/product/' + product,
+            'GET',
+            function(err, products) {
+              if(err) {
+                return reject(err);
+              } else {
+                return resolve(products);
+              }
+            }
+          );
+        }
+      });
+    }
+  }, {
+    key: 'getProduct',
+    value: function (product) {
+      var _this = this;
+      return Q.Promise(function(resolve) {
+        _this.APIRequest(
+          '/product/' + product,
+          'GET',
+          function(err, product) {
+              if(err) {
+                return reject(err);
+              } else {
+                return resolve(product);
+              }
+            }
+        );
+      });
+    }
+  }, {
     key: 'APIRequest',
     value: function APIRequest(path, method, callback, field, body, params) {
       if (
@@ -308,7 +358,11 @@ var BugzillaClient = (function () {
       }
 
       if (params && Object.keys(params).length > 0) {
-        url += '?' + this.urlEncode(params);
+        if( url.match(/\?/) ) {
+          url += '&' + this.urlEncode(params);
+        } else {
+          url += '?' + this.urlEncode(params);
+        }
       }
 
       body = JSON.stringify(body);
@@ -351,7 +405,6 @@ var BugzillaClient = (function () {
 
       // even in the case of an unsuccessful request we may have json data.
       var parsedBody;
-
       try {
         parsedBody = JSON.parse(response.responseText);
       } catch (e) {
