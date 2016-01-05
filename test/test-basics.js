@@ -210,3 +210,85 @@ describe('test using an api_key', function() {
     });
   });
 });
+
+describe('test product api', function() {
+  before(function() {
+    bugzilla = bz.createClient(authConfig);
+  });
+  it("should get information about all selectable products", function testGetProducts() {
+    bugzilla.getProducts("selectable")
+      .then(function(products) {
+        // TODO verify that only selectable bugs are returned
+        assert.ok(products.products);
+        done();
+      });
+  });
+  it("should get information about all enterable products", function testGetProducts() {
+    bugzilla.getProducts("enterable")
+      .then(function(products) {
+        // TODO verify that only enterable bugs are returned
+        assert.ok(products.products);
+        done();
+      });
+  });
+  it("should get information about all accessible products", function testGetProducts() {
+    bugzilla.getProducts("accessible")
+      .then(function(products) {
+        // TODO verify that only accessible bugs are returned
+        assert.ok(products.products);
+        done();
+      });
+  });
+  it("should get information about a specfic product by id", function testGetProduct() {
+    var testId = 0;
+    bugzilla.getProduct(testId)
+      .then(function(product) {
+        assert.ok(products.products[0].id === testId );
+        done();
+      });
+  });
+  it("should get information about a specfic product by name", function testGetProduct() {
+    var testName = "TestProduct";
+    bugzilla.getProduct(testName)
+      .then(function(product) {
+        assert.ok(products.products[0].name === testName );
+        done();
+      });
+  });
+  it("should get information about multiple products by id", function testGetProducts() {
+    var testIds = [0, 1, 2];
+    bugzilla.getProducts(testIds)
+      .then(function(products) {
+        var returnedIds = [];
+        products.products.forEach(function(currentValue, index, array) {
+          returnedIds.push(currentValue.id);
+        });
+        returnedIds.sort(function(a,b) {
+          return a-b;
+        });
+        testIds.sort(function(a,b) {
+          return a-b;
+        });
+        assert.ok( JSON.stringify(returnedIds) === JSON.stringify(testIds) );
+        done();
+      });
+  });
+  it("should get information about multiple products by name", function testGetProducts() { 
+    var testProductNames = ["TestProduct", "AnotherTestProduct", "ThirdTestProduct"];
+    bugzilla.getProducts(testProductNames)
+      .then(function(products) {
+        var returnedProductNames = [];
+        products.products.forEach(function(currentValue, index, array) {
+          returnedProductNames.push(currentValue.name);
+        });
+        returnedProductNames.sort(function(a,b) {
+          return a>b;
+        });
+        testProductNames.sort(function(a,b) {
+          return a>b;
+        });
+        assert.ok( JSON.stringify(returnedProductNames) === JSON.stringify(testProductNames) );
+        done();
+      });
+  });
+});

@@ -287,6 +287,54 @@ export var BugzillaClient = class {
     req.send();
   }
 
+  getProducts (product) {
+    var _this = this;
+    return new Promise(function(resolve, reject) {
+      if( product === "selectable" || product === "enterable" || product === "accessible" ) {
+        _this.APIRequest(
+          '/product?type=' + product,
+          'GET',
+          function(err, products) {
+            if(err) {
+              return reject(err);
+            } else {
+              return resolve(products);
+            }
+          }
+        );
+      } else {
+        _this.APIRequest(
+          '/product/' + product,
+          'GET',
+          function(err, products) {
+            if(err) {
+              return reject(err);
+            } else {
+              return resolve(products);
+            }
+          }
+        );
+      }
+    });
+  }
+
+  getProduct (product) {
+    var _this = this;
+    return new Promise(function(resolve, reject) {
+      _this.APIRequest(
+        '/product/' + product,
+        'GET',
+        function(err, product) {
+            if(err) {
+              return reject(err);
+            } else {
+              return resolve(product);
+            }
+          }
+      );
+    });
+  }
+
   APIRequest (path, method, callback, field, body, params) {
     if (
       // if we are doing the login

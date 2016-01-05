@@ -1,13 +1,15 @@
 'use strict';
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 exports.createClient = createClient;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
 var XMLHttpRequest = require('./xhr').XMLHttpRequest;
 
 /**
@@ -36,7 +38,7 @@ function extractField(id, callback) {
       }
       callback(null, response[id]);
     } else {
-      throw 'Error:, no response in extractField';
+      throw "Error:, no response in extractField";
     }
   };
 }
@@ -72,8 +74,8 @@ function loginRequired(method) {
 }
 
 var BugzillaClient = (function () {
-  var _class = function BugzillaClient(options) {
-    _classCallCheck(this, _class);
+  function BugzillaClient(options) {
+    _classCallCheck(this, BugzillaClient);
 
     options = options || {};
 
@@ -87,28 +89,28 @@ var BugzillaClient = (function () {
     }
 
     this.apiUrl = options.url || 'https://bugzilla.mozilla.org/rest/';
-    this.apiUrl = this.apiUrl.replace(/\/$/, '');
+    this.apiUrl = this.apiUrl.replace(/\/$/, "");
 
     this._auth = null;
-  };
+  }
 
-  _createClass(_class, [{
+  /**
+  Authentication details for given user.
+   Example:
+       { id: 1222, token: 'xxxx' }
+   @type {Object}
+  */
+
+  /**
+  In the REST API we first login to acquire a token which is then used to make
+  requests. See: http://bzr.mozilla.org/bmo/4.2/view/head:/Bugzilla/WebService/Server/REST.pm#L556
+   This method can be used publicly but is designed for internal consumption for
+  ease of use.
+   @param {Function} callback [Error err, String token].
+  */
+
+  _createClass(BugzillaClient, [{
     key: 'login',
-
-    /**
-    Authentication details for given user.
-     Example:
-         { id: 1222, token: 'xxxx' }
-     @type {Object}
-    */
-
-    /**
-    In the REST API we first login to acquire a token which is then used to make
-    requests. See: http://bzr.mozilla.org/bmo/4.2/view/head:/Bugzilla/WebService/Server/REST.pm#L556
-     This method can be used publicly but is designed for internal consumption for
-    ease of use.
-     @param {Function} callback [Error err, String token].
-    */
     value: function login(callback) {
 
       if (this._auth) {
@@ -125,9 +127,8 @@ var BugzillaClient = (function () {
       };
 
       var handleLogin = (function handleLogin(err, response) {
-        if (err) {
-          return callback(err);
-        }if (response.result) {
+        if (err) return callback(err);
+        if (response.result) {
           this._auth = response.result;
         } else {
           this._auth = response;
@@ -168,7 +169,7 @@ var BugzillaClient = (function () {
       var _callback = function _callback(e, r) {
         if (e) throw e;
         var _bug_comments = r[id];
-        if (typeof _bug_comments.comments !== 'undefined') {
+        if (typeof _bug_comments['comments'] !== 'undefined') {
           // bugzilla 5 :(
           _bug_comments = _bug_comments.comments;
         }
@@ -187,8 +188,6 @@ var BugzillaClient = (function () {
     value: function bugHistory(id, callback) {
       this.APIRequest('/bug/' + id + '/history', 'GET', callback, 'bugs');
     }
-  }, {
-    key: 'bugAttachments',
 
     /**
      * Finds all attachments for a given bug #
@@ -197,6 +196,8 @@ var BugzillaClient = (function () {
      * @param {Number} id of bug.
      * @param {Function} [Error, Array<Attachment>].
      */
+  }, {
+    key: 'bugAttachments',
     value: function bugAttachments(id, callback) {
       this.APIRequest('/bug/' + id + '/attachment', 'GET', extractField(id, callback), 'bugs');
     }
@@ -232,14 +233,14 @@ var BugzillaClient = (function () {
       // http://bzr.mozilla.org/bmo/4.2/view/head:/extensions/Review/lib/WebService.pm#L102
       this.APIRequest('/review/suggestions/' + id, 'GET', callback);
     }
-  }, {
-    key: 'getConfiguration',
 
     /*
       XXX this call is provided for convenience to people scripting against prod bugzillq
       THERE IS NO EQUIVALENT REST CALL IN TIP, so this should not be tested against tip, hence
       the hard-coded url.
     */
+  }, {
+    key: 'getConfiguration',
     value: function getConfiguration(params, callback) {
       if (!callback) {
         callback = params;
@@ -253,7 +254,7 @@ var BugzillaClient = (function () {
 
       var req = new XMLHttpRequest();
       req.open('GET', 'https://api-dev.bugzilla.mozilla.org/latest/configuration', true);
-      req.setRequestHeader('Accept', 'application/json');
+      req.setRequestHeader("Accept", "application/json");
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
           that.handleResponse(null, req, callback);
@@ -267,6 +268,44 @@ var BugzillaClient = (function () {
         that.handleResponse('error', req, callback);
       };
       req.send();
+    }
+  }, {
+    key: 'getProducts',
+    value: function getProducts(product) {
+      var _this = this;
+      return new Promise(function (resolve, reject) {
+        if (product === "selectable" || product === "enterable" || product === "accessible") {
+          _this.APIRequest('/product?type=' + product, 'GET', function (err, products) {
+            if (err) {
+              return reject(err);
+            } else {
+              return resolve(products);
+            }
+          });
+        } else {
+          _this.APIRequest('/product/' + product, 'GET', function (err, products) {
+            if (err) {
+              return reject(err);
+            } else {
+              return resolve(products);
+            }
+          });
+        }
+      });
+    }
+  }, {
+    key: 'getProduct',
+    value: function getProduct(product) {
+      var _this = this;
+      return new Promise(function (resolve, reject) {
+        _this.APIRequest('/product/' + product, 'GET', function (err, product) {
+          if (err) {
+            return reject(err);
+          } else {
+            return resolve(product);
+          }
+        });
+      });
     }
   }, {
     key: 'APIRequest',
@@ -308,7 +347,7 @@ var BugzillaClient = (function () {
       }
 
       if (params && Object.keys(params).length > 0) {
-        url += '?' + this.urlEncode(params);
+        url += "?" + this.urlEncode(params);
       }
 
       body = JSON.stringify(body);
@@ -317,9 +356,9 @@ var BugzillaClient = (function () {
 
       var req = new XMLHttpRequest();
       req.open(method, url, true);
-      req.setRequestHeader('Accept', 'application/json');
-      if (method.toUpperCase() !== 'GET') {
-        req.setRequestHeader('Content-Type', 'application/json');
+      req.setRequestHeader("Accept", "application/json");
+      if (method.toUpperCase() !== "GET") {
+        req.setRequestHeader("Content-Type", "application/json");
       }
       req.onreadystatechange = function (event) {
         if (req.readyState == 4 && req.status != 0) {
@@ -344,9 +383,9 @@ var BugzillaClient = (function () {
       }
 
       // handle generic errors
-      if (err) {
-        return callback(err);
-      } // anything in 200 status range is a success
+      if (err) return callback(err);
+
+      // anything in 200 status range is a success
       var requestSuccessful = response.status > 199 && response.status < 300;
 
       // even in the case of an unsuccessful request we may have json data.
@@ -362,8 +401,8 @@ var BugzillaClient = (function () {
       }
 
       // detect if we're running Bugzilla 5.0
-      if (typeof parsedBody.result !== 'undefined') {
-        parsedBody = parsedBody.result;
+      if (typeof parsedBody['result'] !== 'undefined') {
+        parsedBody = parsedBody['result'];
       }
 
       // successful http respnse but an error
@@ -373,7 +412,9 @@ var BugzillaClient = (function () {
       }
 
       if (!requestSuccessful) {
-        return callback(new Error('HTTP status ' + response.status + '\n' + (parsedBody && parsedBody.message) ? parsedBody.message : ''));
+        return callback(new Error('HTTP status ' + response.status + '\n' + (
+        // note intentional use of != instead of !==
+        parsedBody && parsedBody.message) ? parsedBody.message : ''));
       }
 
       callback(null, field ? parsedBody[field] : parsedBody);
@@ -387,14 +428,14 @@ var BugzillaClient = (function () {
         if (!values.forEach) values = [values];
         // expand any arrays
         values.forEach(function (value) {
-          url.push(encodeURIComponent(param) + '=' + encodeURIComponent(value));
+          url.push(encodeURIComponent(param) + "=" + encodeURIComponent(value));
         });
       }
-      return url.join('&');
+      return url.join("&");
     }
   }]);
 
-  return _class;
+  return BugzillaClient;
 })();
 
 exports.BugzillaClient = BugzillaClient;
@@ -402,5 +443,3 @@ exports.BugzillaClient = BugzillaClient;
 function createClient(options) {
   return new BugzillaClient(options);
 }
-
-// note intentional use of != instead of !==
