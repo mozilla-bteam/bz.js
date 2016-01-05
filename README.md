@@ -112,3 +112,9 @@ retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAP
 `getConfiguration(options, callback)`  
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server. Note: this only works currently against Mozilla's production instance, the bugzilla 5.0 instance running on landfill has no equivalent call that can be run from the browser due to a lack of CORS headers.
 
+`getProducts(id)`  
+retrieves a list of all [products](https://bugs.cse.iitb.ac.in/bugs/docs/en/html/api/core/v1/product.html#get-product) matching the id. Valid values for id are `enterable`, `accessible`, `selectable`, a list of numeric product ids, or a list of product names. The method returns a promise that resolves when the response is available.
+
+`getProduct(id)`  
+retrieves the [product](https://bugs.cse.iitb.ac.in/bugs/docs/en/html/api/core/v1/product.html#get-product) identified by id (either numeric product id, or product name). The method returns a promise that resolves when the response is available.
+
