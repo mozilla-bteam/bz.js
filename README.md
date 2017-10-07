@@ -62,7 +62,7 @@ var bugzilla = bz.createClient({
 ```javascript
 var bugzilla = bz.createClient({
   url: "https://api-dev.bugzilla.mozilla.org/rest/",
-  api_key: "23dsf3423s"
+  api_key: "23dsf3423s",
   timeout: 30000
 });
 ```
