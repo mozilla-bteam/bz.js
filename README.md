@@ -47,7 +47,7 @@ bugzilla.getBug(678223, function(error, bug) {
 
 # API
 `bz.createClient(options)`
-creates a new Bugzilla API client, optionally takes options like the REST API url, username + password, and timeout in milliseconds:
+creates a new Bugzilla API client, optionally takes options like the REST API url, username + password or api_key, and timeout in milliseconds:
 
 ```javascript
 var bugzilla = bz.createClient({
@@ -57,6 +57,17 @@ var bugzilla = bz.createClient({
   timeout: 30000
 });
 ```
+
+
+```javascript
+var bugzilla = bz.createClient({
+  url: "https://api-dev.bugzilla.mozilla.org/rest/",
+  api_key: "23dsf3423s"
+  timeout: 30000
+});
+```
+
+See docs on the [login][bugzilla-login] endpoint.
 
 ### Client methods
 Each method takes a callback that takes an error message (if any kind of error occurs) as its first argument, and the expected return data as its second.
@@ -112,3 +123,4 @@ retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAP
 `getConfiguration(options, callback)`  
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server. Note: this only works currently against Mozilla's production instance, the bugzilla 5.0 instance running on landfill has no equivalent call that can be run from the browser due to a lack of CORS headers.
 
+[bugzilla-login]: https://wiki.mozilla.org/Bugzilla:REST_API
