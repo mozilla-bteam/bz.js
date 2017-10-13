@@ -204,7 +204,7 @@ var BugzillaClient = (function () {
   }, {
     key: 'createAttachment',
     value: function createAttachment(id, attachment, callback) {
-      this.APIRequest('/bug/' + id + '/attachment', 'POST', extractField(callback), 'ids', attachment);
+      this.APIRequest('/bug/' + id + '/attachment', 'POST', extractField(callback), 'attachments', attachment);
     }
   }, {
     key: 'getAttachment',
