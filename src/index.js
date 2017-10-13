@@ -216,7 +216,7 @@ export var BugzillaClient = class {
       '/bug/' + id + '/attachment',
       'POST',
       extractField(callback),
-      'ids',
+      'attachments',
       attachment
     );
   }
