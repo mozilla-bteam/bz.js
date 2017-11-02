@@ -4,7 +4,8 @@
   "version": "0.4.4",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "scripts": {
-    "test": "mocha -t 8000"
+    "build": "neutrino build",
+    "test": "neutrino test"
   },
   "contributors": [
     {
@@ -36,29 +37,23 @@
   "keywords": [
     "bugzilla"
   ],
-  "repository": {
-    "url": "http://github.com/canuckistani/bz.js.git",
-    "type": "git"
-  },
-  "main": "./build/node/index",
+  "repository": "canuckistani/bz.js",
+  "main": "./build",
+  "files": [
+    "src",
+    "build"
+  ],
   "dependencies": {
-    "xmlhttprequest": "^1.7.0"
+    "query-string": "^5.0.1",
+    "r2": "^2.0.0"
   },
   "devDependencies": {
-    "babel": "^5.1.9",
-    "babelify": "^6.0.2",
-    "browserify": "^9.0.8",
+    "@neutrinojs/library": "^8.0.0-alpha4",
     "chai": "^2.2.0",
     "colors": "^1.0.3",
     "connect": "^3.3.5",
-    "gulp": "^3.8.11",
-    "gulp-babel": "^5.1.0",
-    "gulp-plumber": "^1.0.0",
-    "gulp-print": "^1.1.0",
-    "gulp-watch": "^4.2.4",
     "magic-constants": "0.0.1",
-    "mocha": "^2.2.4",
-    "serve-static": "^1.9.2",
-    "vinyl-source-stream": "^1.1.0"
+    "neutrino": "^7.3.0",
+    "neutrino-preset-mocha": "^7.3.0"
   }
 }

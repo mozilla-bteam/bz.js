@@ -17,7 +17,7 @@ npm install bz
 
 and use with `var bz = require("bz")`
 
-For the browser, download the lastest bz-<version>.js from the root directory. 
+For the browser, download the latest from https://unpkg.com/bz 
 
 ## Development
 
@@ -27,42 +27,40 @@ For the browser, download the lastest bz-<version>.js from the root directory.
 
 ### Builds
 
-1. `gulp` - this will build node and browser files from the ./src directory. The node main entry now points to `./build/node/index`.
+- `npm run build` - this will build node and browser files from the ./src directory. The node main entry points to `./build`.
 
 ### Tests
 
-Some tests are included. If you want to run the browser tests you need to copy the file `config-test.json-sample` in the test/browser/files directory to a file called `config-test.json` in the same directory, then fill in the placeholders with your bugzilla credentials.
+Some tests are included. If you want to run the tests, you can do so with `npm test`.
 
 ## Usage
 
 ```javascript
 var bugzilla = bz.createClient();
 
-bugzilla.getBug(678223, function(error, bug) {
-  if (!error) {
-    alert(bug.summary);
-  }
-});
+bugzilla
+  .getBug(678223)
+  .then(bug => {
+    console.log(bug.summary);
+  });
 ```
 
 # API
 `bz.createClient(options)`
-creates a new Bugzilla API client, optionally takes options like the REST API url, username + password or api_key, and timeout in milliseconds:
+creates a new Bugzilla API client, optionally takes options like the REST API url, username + password or apiKey:
 
 ```javascript
 var bugzilla = bz.createClient({
-  url: "https://api-dev.bugzilla.mozilla.org/rest/",
+  url: 'https://api-dev.bugzilla.mozilla.org/rest/',
   username: 'bugs@bugmail.com',
-  password: 'secret',
-  timeout: 30000
+  password: 'secret'
 });
 ```
 
-
 ```javascript
 var bugzilla = bz.createClient({
-  url: "https://api-dev.bugzilla.mozilla.org/rest/",
-  api_key: "23dsf3423s",
+  url: 'https://api-dev.bugzilla.mozilla.org/rest/',
+  apiKey: '23dsf3423s',
   timeout: 30000
 });
 ```
@@ -70,57 +68,57 @@ var bugzilla = bz.createClient({
 See docs on the [login][bugzilla-login] endpoint.
 
 ### Client methods
-Each method takes a callback that takes an error message (if any kind of error occurs) as its first argument, and the expected return data as its second.
+Each method returns a Promise so you can await on the data or catch any errors.
 
-`getBug(id, callback)`  
+`getBug(id)`  
 retrieves a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) given a bug id.
 
-`searchBugs(searchParams, callback)`  
+`searchBugs(searchParams)`  
 searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and fetches an array of [bugs](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug).
 
-`countBugs(searchParams, callback)`  
+`countBugs(searchParams)`  
 <del>searches with given [search parameters](https://wiki.mozilla.org/Bugzilla:REST_API:Search) and gets a integer count of bugs matching that query.</del> this is not supported currently.
 
-`createBug(bug, callback)`  
+`createBug(bug)`  
 creates a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) and returns the id of the newly created bug.
 
-`updateBug(id, bug, callback)`  
+`updateBug(id, bug)`  
 updates a [bug](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Bug) with new bug info.
 
-`bugComments(id, callback)`  
+`bugComments(id)`  
 retrieves the [comments](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Comment) for a bug.
 
-`addComment(id, comment, callback)`  
+`addComment(id, comment)`  
 adds a [comment](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Comment) to a bug.
 
-`bugHistory(id, callback)`  
+`bugHistory(id)`  
 retrieves array of [changes](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#ChangeSet) for a bug.
 
-`bugFlags(id, callback)`  
+`bugFlags(id)`  
 retrieves array of [flags](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Flag) for a bug.
 
-`bugAttachments(id, callback)`  
+`bugAttachments(id)`  
 retrieves array of [attachments](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Attachment) for a bug.
 
-`createAttachment(bugId, attachment, callback)`  
+`createAttachment(bugId, attachment)`  
 creates an [attachment](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Attachment) on a bug, and returns the id of the newly created attachment.
 
-`getAttachment(attachId, callback)`  
+`getAttachment(attachId)`  
 gets an [attachment](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Attachment) given an attachment id.
 
-`updateAttachment(attachId, attachment, callback)`  
+`updateAttachment(attachId, attachment)`  
 updates the [attachment](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#Attachment).
 
-`searchUsers(match, callback)`  
+`searchUsers(match)`  
 searches for [users](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#User) by string, matching against users' names or real names.
  
-`getUser(userId, callback)`  
+`getUser(userId)`  
 retrieves a [user](https://wiki.mozilla.org/Bugzilla:REST_API:Objects#User) given a user id.
 
-`getSuggestedReviewers(id, callback)`  
+`getSuggestedReviewers(id)`  
 retrieves a list of [suggested reviewers](https://wiki.mozilla.org/Bugzilla:BzAPI:Objects#Suggested_Reviewer) for a bug.
 
-`getConfiguration(options, callback)`  
+`getConfiguration(options)`  
 gets the [configuration](https://wiki.mozilla.org/Bugzilla:REST_API:Objects:Configuration) of this Bugzilla server. Note: this only works currently against Mozilla's production instance, the bugzilla 5.0 instance running on landfill has no equivalent call that can be run from the browser due to a lack of CORS headers.
 
 [bugzilla-login]: https://wiki.mozilla.org/Bugzilla:REST_API
