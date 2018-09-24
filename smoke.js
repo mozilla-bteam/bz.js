@@ -3,52 +3,14 @@ var colors = require('colors');
 require('magic-constants')(global);
 var authConfig = require('./test/browser/files/test-config.json');
 
-console.log("authConfig", authConfig);
-
-var bugzilla = bz.createClient(); // PROD
-
-// var bugzilla = bz.createClient(authConfig);
-
-// client.login(function (err, response) {
-//   console.log("this", this);
-//   client.getUser(client._auth.id, function (err, user) {
-//     // if (err) throw err;
-//     console.log("User>", user);
-
-//     // var bug = {
-//     //   summary: 'test bug',
-//     //   product: 'Firefox',
-//     //   component: 'Developer Tools',
-//     //   user: user,
-//     //   comments: [{
-//     //     text: 'something',
-//     //     creator: user
-//     //   }]
-//     // }
-//     // client.createBug(bug, function (e, r) {
-//     //   if (e) throw e;
-//     //   console.log("created? ", r);
-//     // });
-//   })
-// });
-
-// client.getConfiguration(function(err, result) {
-//   if (err) throw err;
-//   console.log("config>", result);
-// });
-
-// client.searchUsers("jeff@burnitall.com", function(error, users) {
-//   console.log("go here 1");
-//   if (error) throw error;
-//   console.log("users>", users);
-// });
+// console.log("authConfig", authConfig);
 
 var assert = {
   ok: function(val1, val2) {
     var ret;
     if (val2)
       ret = (val1 === val2)
-    else 
+    else
       ret = !!val1
 
     assert._log(ret);
@@ -59,105 +21,154 @@ var assert = {
   _log: function(ok) {
     var args = [].slice.call(arguments);
     // args.shift();
-    ok ? console.log(colors.green("pass> "+ok)) : console.error(colors.red("fail>", ok, __caller+':'+__caller_lineno));
+    ok ? console.log(colors.green("pass> " + ok)) : console.error(colors.red(
+      "fail>", ok, __caller + ':' + __caller_lineno));
   }
 }
 
-// bugzilla.getBug(6000, function(err, bug) {
-//   if (err) throw err;
-//   assert.ok(bug.summary);
-// });
+var bugzilla = bz.createClient(authConfig); // allizom
 
-// private bug, should fail
-bugzilla.getBug(767101, function(err, bug) {
-  if (err) throw err;
-  console.log("bug>", bug);
-  // if (err) throw err;
-  // assert.ok(bug.summary);
+console.log(bugzilla);
+
+bugzilla.login(function(err, response) {
+  console.log("this", this);
+  bugzilla.getUser(bugzilla._auth.id, function(err, user) {
+    // if (err) throw err;
+    console.log("User>", user);
+
+    // var bug = {
+    //   summary: 'test bug',
+    //   product: 'Firefox',
+    //   component: 'Developer Tools',
+    //   user: user,
+    //   comments: [{
+    //     text: 'something',
+    //     creator: user
+    //   }]
+    // }
+    // bugzilla.createBug(bug, function (e, r) {
+    //   if (e) throw e;
+    //   console.log("created? ", r);
+    // });
+  })
 });
 
-// bugzilla.bugHistory(9955, function(err, bugs) {
-//   if (err) throw err;
-//   assert.equal(bugs.length, 1);
-//   assert.ok(bugs[0].history);
-// });
+bugzilla.getConfiguration(function(err, result) {
+  if (err) throw err;
+  console.log("config>", result);
+});
 
-// bugzilla.searchBugs({
-//     summary: "window",
+bugzilla.searchUsers("jwz@jwz.org", function(error, users) {
+  if (error) throw error;
+  console.log("users>", users);
+});
+
+bugzilla.getBug(6000, function(err, bug) {
+  if (err) throw err;
+  assert.ok(bug.summary);
+});
+
+// private bug, should fail
+bugzilla.getBug(6000, function(err, bug) {
+  if (err) throw err;
+  // console.log("bug>", bug);
+  // if (err) throw err;
+  assert.ok(bug.summary);
+});
+
+bugzilla.bugHistory(9955, function(err, bugs) {
+  if (err) throw err;
+  assert.equal(bugs.length, 1);
+  assert.ok(bugs[0].history);
+});
+
+bugzilla.searchBugs({
+    summary: "window",
+    summary_type: "contains_all_words"
+  },
+  function(err, bugs) {
+    if (err) throw err;
+    assert.ok(bugs.length);
+  }
+);
+
+bugzilla.createBug({
+    product: "Firefox",
+    component: "Developer Tools",
+    summary: "it's broken",
+    version: "Trunk",
+    platform: "All",
+    op_sys: "All"
+  },
+  function(err, id) {
+    if (err) throw err;
+    assert.equal(typeof id, "number");
+  }
+);
+
+bugzilla.getBug(9955, function(err, bug) {
+  if (err) throw err;
+  bug = {
+    update_token: bug.update_token,
+    summary: 'new summary'
+  }
+  bugzilla.updateBug(9955, bug, function(err, ok) {
+    if (err) throw err;
+    assert.ok(ok);
+  });
+});
+
+// bugzilla.countBugs({
+//     summary: "windowvane",
 //     summary_type: "contains_all_words"
-//   }, 
-//   function(err, bugs) {
-//     if (err) throw err;
-//     assert.ok(bugs.length);
-//   }
-// );
-
-// bugzilla.createBug({
-//     product: "Firefox",
-//     component: "Developer Tools",
-//     summary: "it's broken",
-//     version: "Trunk",
-//     platform: "All",
-//     op_sys: "All"
 //   },
-//   function(err, id) {
+//   function(err, count) {
 //     if (err) throw err;
-//     assert.equal(typeof id, "number");
+//     assert.equal(count, 1);
 //   }
 // );
 
-// bugzilla.getBug(9955, function(err, bug) {
-//   if (err) throw err;
-//   bug = {
-//      update_token: bug.update_token,
-//      summary: 'new summary'
-//   }
-//   bugzilla.updateBug(9955, bug, function(err, ok) {
-//     if (err) throw err;
-//     assert.ok(ok);
-//   });
+bugzilla.bugComments(6000, function(err, comments) {
+  if (err) throw err;
+  assert.ok(comments.length);
+});
+
+bugzilla.addComment(6000, {
+    comment: "new comment"
+  },
+  function(err, ok) {
+    if (err) throw err;
+    assert.ok(ok);
+  }
+);
+
+bugzilla.bugHistory(9955, function(err, history) {
+  if (err) throw err;
+  assert.ok(history.length);
+});
+
+// bugzilla.bugFlags(9955, function(err, flags) {
+//   assert.ok(!err, err);
+//   assert.ok(flags.length);
 // });
 
-// // bugzilla.countBugs({
-// //     summary: "windowvane",
-// //     summary_type: "contains_all_words"
-// //   }, 
-// //   function(err, count) {
-// //     if (err) throw err;
-// //     assert.equal(count, 1);
-// //   }
-// // );
+bugzilla.bugAttachments(9955, function(err, attachments) {
+  if (err) throw err;
+  assert.ok(attachments);
+});
 
-// bugzilla.bugComments(6000, function(err, comments) {
-//   if (err) throw err;
-//   assert.ok(comments.length);
-// });
+bugzilla.bugComments(6000, function(err, comments) {
+  if (err) throw err;
+  console.log("comments.length>", comments.length);
+});
 
-// bugzilla.addComment(6000, {
-//     comment: "new comment"
-//   },
-//   function(err, ok) {
-//     if (err) throw err;
-//     assert.ok(ok);
-//   }
-// );
-
-// bugzilla.bugHistory(9955, function(err, history) {
-//   if (err) throw err;
-//   assert.ok(history.length);
-// });
-
-// // bugzilla.bugFlags(9955, function(err, flags) {
-// //   assert.ok(!err, err);
-// //   assert.ok(flags.length);
-// // });
-
-// bugzilla.bugAttachments(9955, function(err, attachments) {
-//   if (err) throw err;
-//   assert.ok(attachments);
-// });
-
-// bugzilla.bugComments(6000, function(err, comments) {
-//   if (err) throw err;
-//   console.log("comments.length>", comments.length);
-// });
+bugzilla.getProducts("selectable")
+  .then(function(products) {
+    // TODO verify that only selectable bugs are returned
+    assert.ok(products);
+    assert.ok(products.ids);
+    // done();
+  })
+  .catch((error) => {
+    console.log(error);
+  });

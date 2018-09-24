@@ -1,14 +1,16 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.XMLHttpRequest = void 0;
 var XMLHttpRequest = null;
-
 exports.XMLHttpRequest = XMLHttpRequest;
+
 if (typeof window === 'undefined') {
   // we're not in a browser?
   var _loader = require;
+
   try {
     exports.XMLHttpRequest = XMLHttpRequest = _loader('sdk/net/xhr').XMLHttpRequest;
   } catch (e) {
