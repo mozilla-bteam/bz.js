@@ -1,38 +1,29 @@
 {
   "name": "bz",
   "description": "Bugzilla REST API wrapper",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "scripts": {
     "test": "mocha -t 8000"
   },
-  "contributors": [
-    {
-      "name": "Jeff Griffiths",
-      "email": "jeff@canuckistani.ca"
-    },
-    {
-      "name": "James Lal"
-    },
-    {
-      "name": "Kevin Grandon"
-    },
-    {
-      "name": "Axel Hecht"
-    },
-    {
-      "name": "Josh Matthews"
-    },
-    {
-      "name": "Graeme McCutcheon"
-    },
-    {
-      "name": "Farrin Reid"
-    },
-    {
-      "name": "John Davis"
-    }
-  ],
+  "contributors": [{
+    "name": "Jeff Griffiths",
+    "email": "jeff@canuckistani.ca"
+  }, {
+    "name": "James Lal"
+  }, {
+    "name": "Kevin Grandon"
+  }, {
+    "name": "Axel Hecht"
+  }, {
+    "name": "Josh Matthews"
+  }, {
+    "name": "Graeme McCutcheon"
+  }, {
+    "name": "Farrin Reid"
+  }, {
+    "name": "John Davis"
+  }],
   "keywords": [
     "bugzilla"
   ],
@@ -45,19 +36,22 @@
     "xmlhttprequest": "^1.7.0"
   },
   "devDependencies": {
-    "babel": "^5.1.9",
-    "babelify": "^6.0.2",
-    "browserify": "^9.0.8",
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.2",
     "chai": "^2.2.0",
     "colors": "^1.0.3",
     "connect": "^3.3.5",
-    "gulp": "^3.8.11",
-    "gulp-babel": "^5.1.0",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^8.0.0",
     "gulp-plumber": "^1.0.0",
     "gulp-print": "^1.1.0",
     "gulp-watch": "^4.2.4",
     "magic-constants": "0.0.1",
-    "mocha": "^2.2.4",
+    "mocha": "^5.2.0",
     "serve-static": "^1.9.2",
     "vinyl-source-stream": "^1.1.0"
   }
