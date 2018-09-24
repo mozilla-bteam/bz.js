@@ -1,4 +1,5 @@
 const XMLHttpRequest = require('./xhr').XMLHttpRequest;
+const _ = require('lodash');
 
 /**
 Constant for the login entrypoint.
@@ -25,9 +26,8 @@ function extractField(id, callback) {
         id = Object.keys(response)[0];
       }
       callback(null, response[id]);
-    }
-    else {
-      throw "Error:, no response in extractField";
+    } else {
+      throw err;
     }
   };
 }
@@ -49,8 +49,8 @@ function loginRequired(method) {
 
     // args for the decorated method
     var args = Array.prototype.slice.call(arguments),
-        // we need the callback so we can pass login related errors.
-        callback = args[args.length - 1];
+      // we need the callback so we can pass login related errors.
+      callback = args[args.length - 1];
 
     this.login(function(err) {
       if (err) return callback(err);
@@ -64,31 +64,31 @@ function loginRequired(method) {
 export var BugzillaClient = class {
 
   constructor(options) {
-    options = options || {};
+      options = options || {};
 
-    this.username = options.username;
-    this.password = options.password;
-    this.timeout = options.timeout || 0;
-    this.api_key = options.api_key || null;
+      this.username = options.username;
+      this.password = options.password;
+      this.timeout = options.timeout || 0;
+      this.api_key = options.api_key || null;
 
-    if (options.test) {
-      throw new Error('options.test is deprecated please specify the url directly');
+      if (options.test) {
+        throw new Error(
+          'options.test is deprecated please specify the url directly');
+      }
+
+      this.apiUrl = options.url || 'https://bugzilla.mozilla.org/rest/';
+      this.apiUrl = this.apiUrl.replace(/\/$/, "");
+      this._auth = null;
     }
+    /**
+    Authentication details for given user.
 
-    this.apiUrl = options.url || 'https://bugzilla.mozilla.org/rest/';
-    this.apiUrl = this.apiUrl.replace(/\/$/, "");
+    Example:
 
-    this._auth = null;
-  }
-  /**
-  Authentication details for given user.
+        { id: 1222, token: 'xxxx' }
 
-  Example:
-
-      { id: 1222, token: 'xxxx' }
-
-  @type {Object}
-  */
+    @type {Object}
+    */
 
 
   /**
@@ -100,27 +100,31 @@ export var BugzillaClient = class {
 
   @param {Function} callback [Error err, String token].
   */
-  login (callback) {
+  login(callback) {
 
     if (this._auth) {
       callback(null, this._auth);
     }
 
-    if (!this.username || !this.password) {
-      throw new Error('missing or invalid .username or .password');
-    }
+    var params = {};
 
-    var params = {
-      login: this.username,
-      password: this.password
-    };
+    if (this.api_key) {
+      params.api_key = this.api_key;
+    } else {
+      if (!this.username || !this.password) {
+        throw new Error('missing or invalid .username or .password');
+      }
+      var params = {
+        login: this.username,
+        password: this.password
+      };
+    }
 
     var handleLogin = function handleLogin(err, response) {
       if (err) return callback(err);
       if (response.result) {
         this._auth = response.result
-      }
-      else {
+      } else {
         this._auth = response;
       }
       callback(null, response);
@@ -129,10 +133,10 @@ export var BugzillaClient = class {
     this.APIRequest('/login', 'GET', handleLogin, null, null, params);
   }
 
-  getBug (id, params, callback) {
+  getBug(id, params, callback) {
     if (!callback) {
-       callback = params;
-       params = {};
+      callback = params;
+      params = {};
     }
 
     this.APIRequest(
@@ -145,19 +149,19 @@ export var BugzillaClient = class {
     );
   }
 
-  searchBugs (params, callback) {
+  searchBugs(params, callback) {
     this.APIRequest('/bug', 'GET', callback, 'bugs', null, params);
   }
 
-  updateBug (id, bug, callback) {
+  updateBug(id, bug, callback) {
     this.APIRequest('/bug/' + id, 'PUT', callback, 'bugs', bug);
   }
 
-  createBug (bug, callback) {
+  createBug(bug, callback) {
     this.APIRequest('/bug', 'POST', callback, 'id', bug);
   }
 
-  bugComments (id, callback) {
+  bugComments(id, callback) {
     var _callback = function(e, r) {
       if (e) throw e;
       var _bug_comments = r[id];
@@ -176,7 +180,7 @@ export var BugzillaClient = class {
     );
   }
 
-  addComment (id, comment, callback) {
+  addComment(id, comment, callback) {
     this.APIRequest(
       '/bug/' + id + '/comment',
       'POST',
@@ -186,7 +190,7 @@ export var BugzillaClient = class {
     );
   }
 
-  bugHistory (id, callback) {
+  bugHistory(id, callback) {
     this.APIRequest(
       '/bug/' + id + '/history',
       'GET',
@@ -202,7 +206,7 @@ export var BugzillaClient = class {
    * @param {Number} id of bug.
    * @param {Function} [Error, Array<Attachment>].
    */
-  bugAttachments (id, callback) {
+  bugAttachments(id, callback) {
     this.APIRequest(
       '/bug/' + id + '/attachment',
       'GET',
@@ -211,17 +215,17 @@ export var BugzillaClient = class {
     );
   }
 
-  createAttachment (id, attachment, callback) {
+  createAttachment(id, attachment, callback) {
     this.APIRequest(
-      '/bug/' + id + '/attachment',
+      `/bug/${id}/attachment`,
       'POST',
-      extractField(callback),
-      'ids',
+      callback,
+      null,
       attachment
     );
   }
 
-  getAttachment (id, callback) {
+  getAttachment(id, callback) {
     this.APIRequest(
       '/bug/attachment/' + id,
       'GET',
@@ -230,15 +234,18 @@ export var BugzillaClient = class {
     );
   }
 
-  updateAttachment (id, attachment, callback) {
-    this.APIRequest('/bug/attachment/' + id, 'PUT', callback, 'ok', attachment);
+  updateAttachment(id, attachment, callback) {
+    this.APIRequest('/bug/attachment/' + id, 'PUT', callback, 'ok',
+      attachment);
   }
 
-  searchUsers (match, callback) {
-    this.APIRequest('/user', 'GET', callback, 'users', null, {match: match});
+  searchUsers(match, callback) {
+    this.APIRequest('/user', 'GET', callback, 'users', null, {
+      match: match
+    });
   }
 
-  getUser (id, callback) {
+  getUser(id, callback) {
     this.APIRequest(
       '/user/' + id,
       'GET',
@@ -247,7 +254,7 @@ export var BugzillaClient = class {
     );
   }
 
-  getSuggestedReviewers (id, callback) {
+  getSuggestedReviewers(id, callback) {
     // BMO- specific extension to get suggested reviewers for a given bug
     // http://bzr.mozilla.org/bmo/4.2/view/head:/extensions/Review/lib/WebService.pm#L102
     this.APIRequest('/review/suggestions/' + id, 'GET', callback);
@@ -258,10 +265,10 @@ export var BugzillaClient = class {
     THERE IS NO EQUIVALENT REST CALL IN TIP, so this should not be tested against tip, hence
     the hard-coded url.
   */
-  getConfiguration (params, callback) {
+  getConfiguration(params, callback) {
     if (!callback) {
-       callback = params;
-       params = {};
+      callback = params;
+      params = {};
     }
 
     // this.APIRequest('/configuration', 'GET', callback, null, null, params);
@@ -270,32 +277,37 @@ export var BugzillaClient = class {
     let that = this;
 
     var req = new XMLHttpRequest();
-    req.open('GET', 'https://api-dev.bugzilla.mozilla.org/latest/configuration', true);
+    var configUrl =
+      `${this.apiUrl.split('rest').shift()}/config.cgi?ctype=json`;
+    req.open('GET',
+      configUrl, true);
     req.setRequestHeader("Accept", "application/json");
-    req.onreadystatechange = function (event) {
+    req.onreadystatechange = function(event) {
       if (req.readyState == 4 && req.status != 0) {
         that.handleResponse(null, req, callback);
       }
     };
     req.timeout = this.timeout;
-    req.ontimeout = function (event) {
+    req.ontimeout = function(event) {
       that.handleResponse('timeout', req, callback);
     };
-    req.onerror = function (event) {
+    req.onerror = function(event) {
       that.handleResponse('error', req, callback);
     };
     req.send();
   }
 
-  getProducts (product) {
+  getProducts(product) {
     var _this = this;
     return new Promise(function(resolve, reject) {
-      if( product === "selectable" || product === "enterable" || product === "accessible" ) {
+      if (product === "selectable" || product === "enterable" ||
+        product === "accessible") {
+        let path = `/product_${product}`
         _this.APIRequest(
-          '/product?type=' + product,
+          path,
           'GET',
           function(err, products) {
-            if(err) {
+            if (err) {
               return reject(err);
             } else {
               return resolve(products);
@@ -303,11 +315,18 @@ export var BugzillaClient = class {
           }
         );
       } else {
+        let _path;
+        if (_.isArray(product)) {
+          let args = 'ids=' + product.join('&ids=');
+          _path = '/product?' + args;
+        } else {
+          _path = '/product/' + product
+        }
         _this.APIRequest(
-          '/product/' + product,
+          _path,
           'GET',
           function(err, products) {
-            if(err) {
+            if (err) {
               return reject(err);
             } else {
               return resolve(products);
@@ -318,24 +337,30 @@ export var BugzillaClient = class {
     });
   }
 
-  getProduct (product) {
-    var _this = this;
+  getProduct(name) {
+    var _this = this,
+      _path;
+    if (_.isArray(name)) {
+      _path = '?names=' + name.join('&names=');
+    } else {
+      _path = '/' + name;
+    }
     return new Promise(function(resolve, reject) {
       _this.APIRequest(
-        '/product/' + product,
+        '/product' + _path,
         'GET',
         function(err, product) {
-            if(err) {
-              return reject(err);
-            } else {
-              return resolve(product);
-            }
+          if (err) {
+            return reject(err);
+          } else {
+            return resolve(product);
           }
+        }
       );
     });
   }
 
-  APIRequest (path, method, callback, field, body, params) {
+  APIRequest(path, method, callback, field, body, params) {
     if (
       // if we are doing the login
       path === LOGIN ||
@@ -356,17 +381,18 @@ export var BugzillaClient = class {
     }.bind(this));
   }
 
-  _APIRequest (path, method, callback, field, body, params) {
+  _APIRequest(path, method, callback, field, body, params) {
     let url = this.apiUrl + path;
 
     params = params || {};
 
-    if(this.api_key) { params.api_key = this.api_key; }
+    if (this.api_key) {
+      params.api_key = this.api_key;
+    }
 
     if (this._auth) {
       params.token = this._auth.token;
-    }
-    else if (this.username && this.password) {
+    } else if (this.username && this.password) {
       params.login = this.username;
       params.password = this.password;
     }
@@ -376,7 +402,6 @@ export var BugzillaClient = class {
     }
 
     body = JSON.stringify(body);
-
     let that = this;
 
     var req = new XMLHttpRequest();
@@ -385,22 +410,22 @@ export var BugzillaClient = class {
     if (method.toUpperCase() !== "GET") {
       req.setRequestHeader("Content-Type", "application/json");
     }
-    req.onreadystatechange = function (event) {
+    req.onreadystatechange = function(event) {
       if (req.readyState == 4 && req.status != 0) {
         that.handleResponse(null, req, callback, field);
       }
     };
     req.timeout = this.timeout;
-    req.ontimeout = function (event) {
+    req.ontimeout = function(event) {
       that.handleResponse('timeout', req, callback);
     };
-    req.onerror = function (event) {
+    req.onerror = function(event) {
       that.handleResponse(event, req, callback);
     };
     req.send(body);
   }
 
-  handleResponse (err, response, callback, field) {
+  handleResponse(err, response, callback, field) {
     // detect timeout errors
     if (err && err.code && TIMEOUT_ERRORS.indexOf(err.code) !== -1) {
       return callback(new Error('timeout'));
@@ -414,6 +439,8 @@ export var BugzillaClient = class {
 
     // even in the case of an unsuccessful request we may have json data.
     var parsedBody;
+
+    // console.log('response>', response);
 
     try {
       parsedBody = JSON.parse(response.responseText);
@@ -448,16 +475,16 @@ export var BugzillaClient = class {
     callback(null, (field) ? parsedBody[field] : parsedBody);
   }
 
-  urlEncode (params) {
+  urlEncode(params) {
     var url = [];
-    for(var param in params) {
+    for (var param in params) {
       var values = params[param];
-      if(!values.forEach)
+      if (!values.forEach)
         values = [values];
       // expand any arrays
       values.forEach(function(value) {
-         url.push(encodeURIComponent(param) + "=" +
-           encodeURIComponent(value));
+        url.push(encodeURIComponent(param) + "=" +
+          encodeURIComponent(value));
       });
     }
     return url.join("&");
