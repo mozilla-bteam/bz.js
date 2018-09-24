@@ -1,5 +1,5 @@
-{   
-  "url": "https://api-dev.bugzilla.mozilla.org/rest/",
+{
+  "url": "http://bugzilla-dev.allizom.org/rest/",
   "username": "FIXME@FOO.BAR",
   "password": "PASSWORD123"
 }
